@@ -1,4 +1,4 @@
-# 🚗 RDE Car Service | Premium Vehicle Delivery & Pickup System
+# 🚗 RDE | Car Service | Premium Vehicle Delivery & Pickup System
 
 <div align="center">
 
@@ -6,11 +6,11 @@
 [![FiveM](https://img.shields.io/badge/FiveM-Ready-blue.svg)](https://fivem.net/)
 [![ox_core](https://img.shields.io/badge/Framework-ox__core-green.svg)](https://github.com/overextended/ox_core)
 [![Version](https://img.shields.io/badge/Version-1.0.0-orange.svg)]()
-[![Stars](https://img.shields.io/github/stars/yourusername/rde_vehicles?style=social)]()
+[![Stars](https://img.shields.io/github/stars/RedDragonElite/rde_carservice?style=social)]()
 
 **Ultra-realistic vehicle valet service with professional AI drivers, full property preservation, and cinematic animations**
 
-[Features](#-features) • [Installation](#-installation) • [Documentation](#-documentation) • [Screenshots](#-screenshots) • [Support](#-support)
+[Features](#-features) • [Installation](#-installation)
 
 </div>
 
@@ -123,7 +123,7 @@ Ensure you have these resources installed and started **before** rde_vehicles:
 1. **Download & Extract**
 ```bash
 cd resources
-git clone https://github.com/yourusername/rde_vehicles.git
+git clone https://github.com/RedDragonElite/rde_carservice.git
 ```
 
 2. **Add to server.cfg**
@@ -211,44 +211,8 @@ local success, coords = lib.callback.await('rde_carservice:requestPickup', false
 **Cancel Active Service:**
 ```lua
 TriggerServerEvent('rde_carservice:cancelService')
-```
 
 ---
-
-## 📚 Documentation
-
-### Full Documentation
-📖 [Complete Technical Documentation](./DOCUMENTATION.md) - 10,000+ words covering:
-- Architecture & system design
-- Property preservation deep-dive
-- Database integration guide
-- Performance optimization
-- Troubleshooting & debug guide
-- Code examples & best practices
-
-### Quick References
-- [Configuration Guide](./docs/CONFIGURATION.md)
-- [API Reference](./docs/API.md)
-- [Troubleshooting](./docs/TROUBLESHOOTING.md)
-- [Changelog](./CHANGELOG.md)
-
----
-
-## 🖼️ Screenshots
-
-<div align="center">
-
-### Vehicle Selection Menu
-![Menu](https://via.placeholder.com/800x450/1a1a2e/ffffff?text=Context+Menu+Screenshot)
-
-### Driver Delivery Sequence
-![Delivery](https://via.placeholder.com/800x450/16213e/ffffff?text=Driver+Approaching+Screenshot)
-
-### Phone Animation
-![Phone](https://via.placeholder.com/800x450/0f3460/ffffff?text=Phone+Call+Animation)
-
-### Property Preservation
-![Properties](https://via.placeholder.com/800x450/533483/ffffff?text=Full+Mods+Preserved)
 
 </div>
 
@@ -301,8 +265,6 @@ Config.Effects = {
 
 - 🇬🇧 **English** (en) - Complete
 - 🇩🇪 **German** (de) - Complete
-- 🇪🇸 **Spanish** (es) - Template ready
-- 🇫🇷 **French** (fr) - Template ready
 
 ### Add Your Language
 
@@ -356,10 +318,6 @@ Want to contribute a translation? Submit a PR!
 ✅ Increase: Config.Timings.serviceTimeout = 900
 ✅ Check server performance during delivery
 ✅ Verify driver can pathfind to player location
-```
-
-📖 [Full Troubleshooting Guide](./docs/TROUBLESHOOTING.md)
-
 ---
 
 ## 📊 Performance
@@ -400,7 +358,7 @@ Resource: rde_vehicles
 
 ### Community Requests
 
-Vote on features: [GitHub Discussions](https://github.com/yourusername/rde_vehicles/discussions)
+Vote on features: [GitHub Discussions](https://github.com/RedDragonElite/rde_carservice/discussions)
 
 ---
 
@@ -409,7 +367,7 @@ Vote on features: [GitHub Discussions](https://github.com/yourusername/rde_vehic
 We welcome contributions! Here's how:
 
 ### Reporting Bugs
-1. Check [existing issues](https://github.com/yourusername/rde_vehicles/issues)
+1. Check [existing issues](https://github.com/RedDragonElite/rde_carservice/issues)
 2. Create new issue with template
 3. Include: FiveM version, ox_core version, console errors, steps to reproduce
 
@@ -430,7 +388,7 @@ We welcome contributions! Here's how:
 
 ## 📄 License
 
-This project is licensed under the **MIT License** - see [LICENSE](./LICENSE) file for details.
+This project is licensed under the **MIT License**.
 
 ### What This Means
 ✅ Commercial use allowed
@@ -456,7 +414,7 @@ This project is licensed under the **MIT License** - see [LICENSE](./LICENSE) fi
 ### Special Thanks
 - Overextended team for ox_core ecosystem
 - FiveM community for testing & feedback
-- Contributors (see [CONTRIBUTORS.md](./CONTRIBUTORS.md))
+- Contributors
 
 ---
 
@@ -464,17 +422,8 @@ This project is licensed under the **MIT License** - see [LICENSE](./LICENSE) fi
 
 ### Get Help
 
-- 📖 [Documentation](./DOCUMENTATION.md) - Comprehensive guide
-- 💬 [Discord Server](https://discord.gg/yourserver) - Community support
-- 🐛 [Issue Tracker](https://github.com/yourusername/rde_vehicles/issues) - Bug reports
-- 💡 [Discussions](https://github.com/yourusername/rde_vehicles/discussions) - Feature requests
-
-### Professional Support
-
-Need custom features or integration help?
-- 📧 Email: support@yourserver.com
-- 💼 Fiverr: [Custom FiveM Development](https://fiverr.com/yourprofile)
-- 🎮 Discord: YourUsername#1234
+- 🐛 [Issue Tracker](https://github.com/RedDragonElite/rde_carservice/issues) - Bug reports
+- 💡 [Discussions](https://github.com/RedDragonElite/rde_carservice/discussions) - Feature requests
 
 ---
 
@@ -482,10 +431,10 @@ Need custom features or integration help?
 
 <div align="center">
 
-![GitHub Downloads](https://img.shields.io/github/downloads/yourusername/rde_vehicles/total?style=for-the-badge)
-![GitHub Stars](https://img.shields.io/github/stars/yourusername/rde_vehicles?style=for-the-badge)
-![GitHub Forks](https://img.shields.io/github/forks/yourusername/rde_vehicles?style=for-the-badge)
-![GitHub Issues](https://img.shields.io/github/issues/yourusername/rde_vehicles?style=for-the-badge)
+![GitHub Downloads](https://img.shields.io/github/downloads/RedDragonElite/rde_carservice/total?style=for-the-badge)
+![GitHub Stars](https://img.shields.io/github/stars/RedDragonElite/rde_carservice?style=for-the-badge)
+![GitHub Forks](https://img.shields.io/github/forks/RedDragonElite/rde_carservice?style=for-the-badge)
+![GitHub Issues](https://img.shields.io/github/issues/RedDragonElite/rde_carservice?style=for-the-badge)
 
 </div>
 
@@ -507,7 +456,7 @@ Need custom features or integration help?
 
 ### ⭐ If you find this useful, please give it a star!
 
-**Made with ❤️ by RDE Development | SerpentsByte**
+**Made with ❤️ by .:: RedDragonElite ::. | SerpentsByte**
 
 [⬆ Back to Top](#-rde-car-service--premium-vehicle-delivery--pickup-system)
 
