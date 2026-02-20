@@ -1,34 +1,55 @@
-# 🚗 RDE | Car Service | Premium Vehicle Delivery & Pickup System
+# 🚗 RDE Car Service — Premium Vehicle Delivery & Pickup System
 
 <div align="center">
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![FiveM](https://img.shields.io/badge/FiveM-Ready-blue.svg)](https://fivem.net/)
-[![ox_core](https://img.shields.io/badge/Framework-ox__core-green.svg)](https://github.com/overextended/ox_core)
-[![Version](https://img.shields.io/badge/Version-1.0.0-orange.svg)]()
-[![Stars](https://img.shields.io/github/stars/RedDragonElite/rde_carservice?style=social)]()
+![Version](https://img.shields.io/badge/version-1.0.0-red?style=for-the-badge&logo=github)
+![License](https://img.shields.io/badge/license-RDE%20Black%20Flag%20v6.66-black?style=for-the-badge)
+![FiveM](https://img.shields.io/badge/FiveM-Compatible-orange?style=for-the-badge)
+![ox_core](https://img.shields.io/badge/ox__core-Required-blue?style=for-the-badge)
+![Free](https://img.shields.io/badge/price-FREE%20FOREVER-brightgreen?style=for-the-badge)
 
-**Ultra-realistic vehicle valet service with professional AI drivers, full property preservation, and cinematic animations**
+**Ultra-realistic vehicle valet service with professional AI drivers, full property preservation, and cinematic animations.**
+Built on ox_core · ox_lib · ox_inventory · ox_target
 
-[Features](#-features) • [Installation](#-installation)
+*Built by [Red Dragon Elite](https://rd-elite.com) | SerpentsByte*
 
 </div>
 
 ---
 
+## 📖 Table of Contents
+
+- [Overview](#-overview)
+- [Features](#-features)
+- [Dependencies](#-dependencies)
+- [Installation](#-installation)
+- [Configuration](#%EF%B8%8F-configuration)
+- [Usage](#-usage)
+- [Developer API](#-developer-api)
+- [Admin Commands](#-admin-commands)
+- [Performance](#-performance)
+- [Roadmap](#%EF%B8%8F-roadmap)
+- [Troubleshooting](#-troubleshooting)
+- [Contributing](#-contributing)
+- [License](#-license)
+
+---
+
 ## 🎯 Overview
 
-**RDE Car Service** transforms vehicle management into an immersive experience. Request professional valet drivers to deliver your stored vehicles directly to your location, or have them picked up and safely stored in your garage. Every customization, every modification, perfectly preserved.
+**RDE Car Service** transforms vehicle management into a fully immersive experience. Request professional valet drivers to deliver your stored vehicles directly to your location, or have them picked up and safely stored in your garage. Every customization, every modification — perfectly preserved.
 
-### 🌟 Why Choose RDE Car Service?
+### Why RDE Car Service?
 
-- ✅ **100% Property Preservation** - All mods, colors, and customizations intact
-- ✅ **Ultra-Realistic AI** - Professional drivers with natural behavior
-- ✅ **Cinematic Animations** - Phone calls, parking sequences, key handovers
-- ✅ **ox_core Native** - Built specifically for ox_core's architecture
-- ✅ **Performance Optimized** - <0.05ms active, <0.01ms idle
-- ✅ **Multi-Language** - English & German (easily expandable)
-- ✅ **Production Ready** - Enterprise-grade error handling & security
+| Feature | Generic Scripts | RDE Car Service |
+|---|---|---|
+| Property preservation | Partial | ✅ 100% — mods, colors, extras |
+| Realistic AI drivers | ❌ | ✅ 9 driver models, traffic-aware |
+| Cinematic animations | ❌ | ✅ Phone call, parking, key handover |
+| ox_core native | ❌ | ✅ Built for it from the ground up |
+| Performance | Variable | ✅ <0.05ms active / <0.01ms idle |
+| Multi-language | ❌ | ✅ EN / DE out of the box |
+| Anti-spam & security | ❌ | ✅ Ownership validation, cooldowns |
 
 ---
 
@@ -36,24 +57,17 @@
 
 ### 🚘 Vehicle Delivery System
 
-<table>
-<tr>
-<td width="50%">
-
 **Intelligent Spawn System**
 - Spawns 200m from player on actual roads
-- 25-iteration pathfinding for perfect placement
+- 25-iteration pathfinding for perfect road placement
 - Ground level verification & collision detection
 - Navmesh-based road snapping
 
 **Professional Drivers**
 - 9 realistic driver models (valet, pilot, business)
-- Follows traffic laws & signals
-- Realistic parking sequences
-- Natural walk-away behavior
-
-</td>
-<td width="50%">
+- Follows traffic laws and signals
+- Realistic parking sequences with precision timing
+- Natural walk-away behavior after handover
 
 **Full Property Preservation**
 - Engine, brakes, transmission upgrades
@@ -65,112 +79,161 @@
 
 **Cinematic Experience**
 - Phone call animations with props
-- 4-second precision parking
-- 3-second key handover
+- 4-second precision parking sequence
+- 3-second key handover animation
 - Particle effects on arrival
 
-</td>
-</tr>
-</table>
-
 ### 📞 Vehicle Pickup System
+- On-demand retrieval via right-click (ox_target) or menu
+- AI driver navigates to the vehicle's exact location
+- Automatic storage in configured garage
+- Complete entity cleanup after completion
 
-- **On-Demand Retrieval** - Right-click any owned vehicle (ox_target)
-- **AI Driver Response** - Professional driver navigates to vehicle location
-- **Automatic Storage** - Vehicle properties saved in configured garage
-- **Complete Cleanup** - Entities removed after timeout
-
-### 🎨 Advanced UI/UX
-
-- **ox_lib Context Menus** - Beautiful, responsive vehicle selection
-- **Animated Blips** - Pulsating markers with route paths
-- **Progress Bars** - Visual feedback for phone calls & actions
-- **Sound Effects** - Native GTA V audio integration
-- **Notification System** - 4-tier alerts (info, success, warning, error)
+### 🎨 UI / UX
+- ox_lib context menus — clean, responsive vehicle selection
+- Animated pulsating blips with route paths
+- Progress bars for phone calls and actions
+- Native GTA V sound effects
+- 4-tier notification system (info / success / warning / error)
 
 ### 💰 Economy Integration
-
-- **Configurable Pricing** - Delivery: $750, Pickup: $500 (customizable)
-- **ox_core Inventory** - Direct integration with character_inventory
-- **Revenue Tracking** - Built-in statistics for deliveries, pickups, earnings
-- **Admin Commands** - `/carservice_stats` for server monitoring
+- Configurable pricing — Delivery: $750, Pickup: $500
+- ox_inventory money deduction via `character_inventory`
+- Built-in delivery / pickup / earnings statistics
+- Admin command for server-side monitoring
 
 ### 🔒 Security & Performance
-
-- **Ownership Validation** - Database verification before any operation
-- **Anti-Spam Protection** - 5-second cooldown between requests
-- **Service Timeout** - 10-minute max duration with auto-cleanup
-- **Error Handling** - Comprehensive error codes & fallback systems
-- **Performance** - Optimized threads, entity cleanup, minimal overhead
+- Database ownership validation before any operation
+- Anti-spam: 5-second cooldown between requests
+- 10-minute service timeout with automatic cleanup
+- Comprehensive error codes and fallback systems
+- Optimized threads with dynamic cleanup
 
 ---
 
-## 📦 Installation
+## 📦 Dependencies
 
-### Prerequisites
+| Resource | Required | Notes |
+|---|---|---|
+| [oxmysql](https://github.com/communityox/oxmysql) | ✅ Required | Database layer |
+| [ox_core](https://github.com/communityox/ox_core) | ✅ Required | Player/character framework |
+| [ox_lib](https://github.com/communityox/ox_lib) | ✅ Required | UI, callbacks, notifications |
+| [ox_target](https://github.com/communityox/ox_target) | ⚠️ Optional | Right-click vehicle pickup |
 
-Ensure you have these resources installed and started **before** rde_vehicles:
+---
 
-```lua
-✅ ox_core (latest version)
-✅ ox_lib (latest version)
-✅ oxmysql (latest version)
-⚠️ ox_target (optional, for vehicle interaction)
-```
+## 🚀 Installation
 
-### Quick Setup
+### 1. Clone the repository
 
-1. **Download & Extract**
 ```bash
 cd resources
 git clone https://github.com/RedDragonElite/rde_carservice.git
 ```
 
-2. **Add to server.cfg**
+### 2. Add to `server.cfg`
+
 ```cfg
-# Core dependencies (start first)
+ensure oxmysql
 ensure ox_core
 ensure ox_lib
-ensure oxmysql
-
-# Optional
-ensure ox_target
-
-# RDE Car Service (start after dependencies)
-ensure rde_vehicles
+ensure ox_target      # optional
+ensure rde_carservice
 ```
 
-3. **Database Verification**
+> **Order matters.** `rde_carservice` must start **after** all its dependencies.
 
-Your `vehicles` table must have these columns:
-```sql
-- plate (VARCHAR) - License plate identifier
-- owner (INT) - Character ID from ox_core
-- model (VARCHAR/INT) - Vehicle model hash
-- data (JSON/TEXT) - Vehicle properties (ox_core format)
-- stored (VARCHAR) - Garage name or NULL when spawned
+### 3. Database
+
+No manual SQL import needed. Works with the existing ox_core `vehicles` table. Ensure it has these columns:
+
+```
+plate   VARCHAR  — license plate identifier
+owner   INT      — character ID from ox_core
+model   VARCHAR  — vehicle model hash
+data    JSON     — vehicle properties (ox_core format)
+stored  VARCHAR  — garage name, NULL when spawned
 ```
 
-No additional tables needed! Works with your existing ox_core database structure.
+### 4. Configure (Optional)
 
-4. **Configuration** (Optional)
+Edit `config.lua`:
 
-Edit `config.lua` to customize:
 ```lua
-Config.DeliveryCost = 750           -- Delivery price
-Config.PickupCost = 500             -- Pickup price
-Config.DefaultGarage = 'legion_garage'  -- Your garage name
-Config.Locale = 'en'                -- 'en' or 'de'
-Config.Debug = false                -- Debug mode (dev only)
+Config.DeliveryCost   = 750              -- Delivery price
+Config.PickupCost     = 500              -- Pickup price
+Config.DefaultGarage  = 'legion_garage'  -- Your garage name
+Config.Locale         = 'en'             -- 'en' or 'de'
+Config.Debug          = false            -- Dev debug mode
 ```
 
-5. **Restart & Test**
-```bash
+### 5. Restart & Test
+
+```
 refresh
-restart rde_vehicles
+restart rde_carservice
 ```
 
-Test with: `/carservice`
+Test with `/carservice` in-game.
+
+---
+
+## ⚙️ Configuration
+
+### Pricing
+
+```lua
+Config.DeliveryCost = 1000   -- Premium pricing
+Config.PickupCost   = 750    -- Higher pickup cost
+```
+
+### Driver Models
+
+```lua
+Config.DriverModels = {
+    `s_m_m_valet_01`,       -- Valet uniform
+    `s_m_m_pilot_01`,       -- Pilot outfit
+    `a_m_m_business_01`,    -- Business suit
+}
+```
+
+### Spawn Distance
+
+```lua
+Config.SpawnDistance = 150.0   -- Closer spawn = faster delivery
+```
+
+### Timing
+
+```lua
+Config.Timings = {
+    driverParkDelay  = 3000,   -- ms — parking animation duration
+    serviceTimeout   = 900,    -- seconds — max service duration
+}
+```
+
+### Effects (Performance Tuning)
+
+```lua
+Config.Effects = {
+    enableParticles      = false,
+    enableSounds         = false,
+    enableBlipAnimation  = false,
+}
+```
+
+### Localization
+
+Add a new language directly in `config.lua`:
+
+```lua
+Config.Translations['es'] = {
+    ['service_requested'] = 'Servicio solicitado',
+    ['service_arriving']  = 'Conductor llegando en ~%s minutos',
+    -- add all keys...
+}
+Config.Locale = 'es'
+```
 
 ---
 
@@ -179,284 +242,195 @@ Test with: `/carservice`
 ### For Players
 
 **Requesting Delivery:**
-1. Type `/carservice` or press F7 (if configured)
-2. Select vehicle from your garage list
-3. Confirm $750 payment
-4. Wait for professional driver (ETA displayed)
-5. Receive vehicle with all mods intact!
+1. Type `/carservice` (or press F7 if configured)
+2. Select your vehicle from the garage list
+3. Confirm the $750 payment
+4. Watch the driver arrive and hand over the keys
 
 **Requesting Pickup:**
 1. Approach your vehicle
-2. Right-click with ox_target or use `/carservice` menu
-3. Select "Request Pickup"
-4. Confirm $500 payment
-5. Driver arrives, takes vehicle to garage
+2. Right-click with ox_target or open `/carservice` menu
+3. Select "Request Pickup" and confirm $500
+4. Driver arrives, collects the vehicle, stores it in your garage
 
-### For Developers
+---
 
-**Trigger Delivery Programmatically:**
+## 🔧 Developer API
+
+### Callbacks
+
+**Request Delivery (server-side)**
 ```lua
 local success, vehicleData = lib.callback.await('rde_carservice:requestDelivery', false, plate)
 if success then
-    print('Vehicle delivery initiated:', json.encode(vehicleData))
+    print('Delivery initiated:', json.encode(vehicleData))
 end
 ```
 
-**Trigger Pickup:**
+**Request Pickup (server-side)**
 ```lua
 local netId = NetworkGetNetworkIdFromEntity(vehicle)
 local success, coords = lib.callback.await('rde_carservice:requestPickup', false, netId)
 ```
 
-**Cancel Active Service:**
+**Cancel Active Service**
 ```lua
 TriggerServerEvent('rde_carservice:cancelService')
-
----
-
-</div>
-
----
-
-## 🔧 Configuration Examples
-
-### Adjust Delivery Pricing
-```lua
-Config.DeliveryCost = 1000  -- Premium pricing
-Config.PickupCost = 750     -- Higher pickup cost
-```
-
-### Change Driver Models
-```lua
-Config.DriverModels = {
-    `s_m_m_valet_01`,      -- Valet uniform
-    `s_m_m_pilot_01`,      -- Pilot outfit
-    `a_m_m_business_01`,   -- Business suit
-}
-```
-
-### Modify Spawn Distance
-```lua
-Config.SpawnDistance = 150.0  -- Closer spawn (faster delivery)
-```
-
-### Timing Adjustments
-```lua
-Config.Timings = {
-    driverParkDelay = 3000,     -- Faster parking
-    serviceTimeout = 900,       -- 15-minute timeout
-}
-```
-
-### Disable Visual Effects (Performance)
-```lua
-Config.Effects = {
-    enableParticles = false,
-    enableSounds = false,
-    enableBlipAnimation = false,
-}
 ```
 
 ---
 
-## 🌐 Localization
+## 📋 Admin Commands
 
-### Supported Languages
+| Command | Description |
+|---|---|
+| `/carservice` | Opens the vehicle selection menu |
+| `/carservice_stats` | Prints delivery / pickup / earnings stats to console |
 
-- 🇬🇧 **English** (en) - Complete
-- 🇩🇪 **German** (de) - Complete
+---
 
-### Add Your Language
+## 📊 Performance
 
-1. Edit `config.lua`:
-```lua
-Config.Translations['es'] = {
-    ['service_requested'] = 'Servicio solicitado',
-    ['service_arriving'] = 'Conductor llegando en ~%s minutos',
-    -- Add all translation keys...
-}
+```
+Resource: rde_carservice
+├─ Idle:    0.01ms  (no active services)
+├─ Active:  0.03–0.05ms  (delivery in progress)
+├─ Memory:  ~2.5 MB baseline
+├─ Threads: Dynamic — cleaned up after completion
+└─ Network: Minimal — callbacks only, no polling
 ```
 
-2. Set active locale:
-```lua
-Config.Locale = 'es'
-```
+Optimization features: async model loading, automatic entity cleanup, prepared SQL statements, smart thread management.
 
-3. Restart resource
+---
 
-Want to contribute a translation? Submit a PR!
+## 🗺️ Roadmap
+
+### Planned for v2.0
+
+- [ ] Multiple garage support — store vehicles in different locations
+- [ ] Express delivery — pay extra for instant spawn
+- [ ] Real-time GPS tracking of the delivery driver
+- [ ] Custom driver uniforms per server
+- [ ] Delivery zone restrictions
+- [ ] Helicopter delivery for remote locations
+- [ ] Damage compensation if driver crashes
+- [ ] VIP subscription pass
+
+Have a feature request? [Open a Discussion](https://github.com/RedDragonElite/rde_carservice/discussions).
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Common Issues
+**Vehicle properties not applying?**
+Enable `Config.Debug = true` and check console for `"Loaded X properties for plate"`. Verify the `vehicles.data` column contains valid JSON.
 
-**Vehicle Properties Not Applying?**
-```lua
-✅ Enable debug: Config.Debug = true
-✅ Check console for: "Loaded X properties for plate"
-✅ Verify vehicle.data column contains valid JSON
-```
+**Driver not spawning?**
+Check console for model loading errors. Ensure all configured ped models are valid GTA V model names and accessible server-side.
 
-**Driver Not Spawning?**
-```lua
-✅ Check console for model loading errors
-✅ Verify driver models are valid GTA V peds
-✅ Ensure models are accessible to server
-```
+**Money not deducting?**
+Verify the `character_inventory` table structure and that the money item format matches: `{"name":"money","count":5000}`.
 
-**Money Not Deducting?**
-```lua
-✅ Verify character_inventory table structure
-✅ Check money item format: {"name":"money","count":5000}
-✅ Enable: Config.DebugOptions.logMoneyTransactions = true
-```
+**Service timing out early?**
+Increase `Config.Timings.serviceTimeout`. Check server performance and that the driver can pathfind to the player location (navmesh coverage).
 
-**Service Timeout?**
-```lua
-✅ Increase: Config.Timings.serviceTimeout = 900
-✅ Check server performance during delivery
-✅ Verify driver can pathfind to player location
----
-
-## 📊 Performance
-
-### Benchmark Results
-
-```
-Resource: rde_vehicles
-├─ Idle: 0.01ms (no active services)
-├─ Active: 0.03-0.05ms (delivery in progress)
-├─ Memory: 2.5 MB baseline
-├─ Threads: Dynamic (cleanup after completion)
-└─ Network: Minimal (callbacks only)
-```
-
-### Optimization Features
-- ✅ Async model loading with timeouts
-- ✅ Automatic entity cleanup
-- ✅ Prepared SQL statements
-- ✅ Minimal network events
-- ✅ Smart thread management
-- ✅ Configurable update intervals
-
----
-
-## 🛣️ Roadmap
-
-### Planned Features (v2.0)
-
-- [ ] **Multiple Garage Support** - Store vehicles in different locations
-- [ ] **Express Delivery** - Pay extra for instant spawn
-- [ ] **Delivery Tracking** - Real-time GPS tracking of driver
-- [ ] **Custom Driver Uniforms** - Server-specific clothing
-- [ ] **Delivery Zones** - Restrict delivery areas
-- [ ] **Helicopter Delivery** - For remote locations
-- [ ] **Damage Compensation** - Refund if driver crashes
-- [ ] **VIP Subscription** - Monthly pass for unlimited deliveries
-
-### Community Requests
-
-Vote on features: [GitHub Discussions](https://github.com/RedDragonElite/rde_carservice/discussions)
+**`No such export` errors?**
+Make sure `rde_carservice` starts **after** `ox_lib`, `ox_core`, and `oxmysql` in `server.cfg`.
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Here's how:
+Contributions are welcome.
 
-### Reporting Bugs
-1. Check [existing issues](https://github.com/RedDragonElite/rde_carservice/issues)
-2. Create new issue with template
-3. Include: FiveM version, ox_core version, console errors, steps to reproduce
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Commit: `git commit -m 'Add your feature'`
+4. Push: `git push origin feature/your-feature`
+5. Open a Pull Request
 
-### Submitting PRs
-1. Fork repository
-2. Create feature branch: `git checkout -b feature/AmazingFeature`
-3. Commit changes: `git commit -m 'Add AmazingFeature'`
-4. Push to branch: `git push origin feature/AmazingFeature`
-5. Open Pull Request
-
-### Code Style
-- Follow existing Lua conventions
-- Comment complex logic
-- Test thoroughly before PR
-- Update documentation
+**Guidelines:** follow existing Lua conventions, comment complex logic, test on a live server before PR, update docs if needed.
 
 ---
 
-## 📄 License
+## 📜 License
 
-This project is licensed under the **MIT License**.
+```
+###################################################################################
+#                                                                                 #
+#      .:: RED DRAGON ELITE (RDE)  -  BLACK FLAG SOURCE LICENSE v6.66 ::.         #
+#                                                                                 #
+#   PROJECT:    RDE_CARSERVICE v1.0.0 (PREMIUM VEHICLE DELIVERY & PICKUP SYSTEM)  #
+#   ARCHITECT:  .:: RDE ⧌ Shin [△ ᛋᛅᚱᛒᛅᚾᛏᛋ ᛒᛁᛏᛅ ▽] ::. | https://rd-elite.com     #
+#   ORIGIN:     https://github.com/RedDragonElite                                 #
+#                                                                                 #
+#   WARNING: THIS CODE IS PROTECTED BY DIGITAL VOODOO AND PURE HATRED FOR LEAKERS #
+#                                                                                 #
+#   [ THE RULES OF THE GAME ]                                                     #
+#                                                                                 #
+#   1. // THE "FUCK GREED" PROTOCOL (FREE USE)                                    #
+#      You are free to use, edit, and abuse this code on your server.             #
+#      Learn from it. Break it. Fix it. That is the hacker way.                   #
+#      Cost: 0.00€. If you paid for this, you got scammed by a rat.               #
+#                                                                                 #
+#   2. // THE TEBEX KILL SWITCH (COMMERCIAL SUICIDE)                              #
+#      Listen closely, you parasites:                                             #
+#      If I find this script on Tebex, Patreon, or in a paid "Premium Pack":      #
+#      > I will DMCA your store into oblivion.                                    #
+#      > I will publicly shame your community.                                    #
+#      > I hope your server lag spikes to 9999ms every time you blink.            #
+#      SELLING FREE WORK IS THEFT. AND I AM THE JUDGE.                            #
+#                                                                                 #
+#   3. // THE CREDIT OATH                                                         #
+#      Keep this header. If you remove my name, you admit you have no skill.      #
+#      You can add "Edited by [YourName]", but never erase the original creator.  #
+#      Don't be a skid. Respect the architecture.                                 #
+#                                                                                 #
+#   4. // THE CURSE OF THE COPY-PASTE                                             #
+#      This code uses advanced logic and navmesh pathfinding.                     #
+#      If you just copy-paste without reading, it WILL break.                     #
+#      Don't come crying to my DMs. RTFM or learn to code.                        #
+#                                                                                 #
+#   --------------------------------------------------------------------------    #
+#   "We build the future on the graves of paid resources."                        #
+#   "REJECT MODERN MEDIOCRITY. EMBRACE RDE SUPERIORITY."                          #
+#   --------------------------------------------------------------------------    #
+###################################################################################
+```
 
-### What This Means
-✅ Commercial use allowed
-✅ Modification allowed  
-✅ Distribution allowed  
-✅ Private use allowed  
-⚠️ License and copyright notice required  
-❌ Liability and warranty not provided
+**TL;DR:**
+- ✅ Free forever — use it, edit it, learn from it
+- ✅ Keep the header — credit where it's due
+- ❌ Don't sell it — commercial use = instant DMCA
+- ❌ Don't be a skid — copy-paste without reading won't work anyway
 
 ---
 
-## 🙏 Credits & Acknowledgments
+## 🌐 Community & Support
 
-### Frameworks & Libraries
-- [ox_core](https://github.com/overextended/ox_core) - Core framework
-- [ox_lib](https://github.com/overextended/ox_lib) - UI & utility library
-- [oxmysql](https://github.com/overextended/oxmysql) - Database connector
+| | |
+|---|---|
+| 🐙 GitHub | [RedDragonElite](https://github.com/RedDragonElite) |
+| 🌍 Website | [rd-elite.com](https://rd-elite.com) |
+| 🔵 Nostr | [SerpentsByte](https://nostr.band/npub1wr4e24zn6zzjqx8kvnelfvktf0pu6l2gx4gvw06zead2eqyn23sq9tsd94) |
+| 🚪 RDE Doors | [rde_doors](https://github.com/RedDragonElite/rde_doors) |
+| 📡 RDE Nostr Log | [rde_nostr_log](https://github.com/RedDragonElite/rde_nostr_log) |
 
-### Inspiration
-- Real-world valet services for behavior logic
-- GTA V's luxury vehicle delivery missions
-
-### Special Thanks
-- Overextended team for ox_core ecosystem
-- FiveM community for testing & feedback
-- Contributors
-
----
-
-## 💬 Support
-
-### Get Help
-
-- 🐛 [Issue Tracker](https://github.com/RedDragonElite/rde_carservice/issues) - Bug reports
-- 💡 [Discussions](https://github.com/RedDragonElite/rde_carservice/discussions) - Feature requests
-
----
-
-## 📈 Statistics
-
-<div align="center">
-
-![GitHub Downloads](https://img.shields.io/github/downloads/RedDragonElite/rde_carservice/total?style=for-the-badge)
-![GitHub Stars](https://img.shields.io/github/stars/RedDragonElite/rde_carservice?style=for-the-badge)
-![GitHub Forks](https://img.shields.io/github/forks/RedDragonElite/rde_carservice?style=for-the-badge)
-![GitHub Issues](https://img.shields.io/github/issues/RedDragonElite/rde_carservice?style=for-the-badge)
-
-</div>
-
----
-
-## 🎬 Video Showcase
-
-<div align="center">
-
-[![RDE Car Service Showcase](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
-
-**Watch the full feature showcase & setup guide on YouTube**
-
-</div>
+**When asking for help, always include:**
+- Full error from server console or txAdmin
+- Your `server.cfg` resource start order
+- ox_core / ox_lib versions
 
 ---
 
 <div align="center">
 
-### ⭐ If you find this useful, please give it a star!
+*"We build the future on the graves of paid resources."*
 
-**Made with ❤️ by .:: RedDragonElite ::. | SerpentsByte**
+**REJECT MODERN MEDIOCRITY. EMBRACE RDE SUPERIORITY.**
+
+🐉 Made with 🔥 by [Red Dragon Elite](https://rd-elite.com)
 
 [⬆ Back to Top](#-rde-car-service--premium-vehicle-delivery--pickup-system)
 
