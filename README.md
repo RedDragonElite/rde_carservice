@@ -1,6 +1,5 @@
 # 🚗 RDE Car Service — Premium Vehicle Delivery & Pickup System
-![dl_1771625749233](https://github.com/user-attachments/assets/14a79e67-1781-49df-bebb-4cbdb7bbadb5)
-
+<center>![dl_1771625749233](https://github.com/user-attachments/assets/14a79e67-1781-49df-bebb-4cbdb7bbadb5)</center>
 <div align="center">
 
 ![Version](https://img.shields.io/badge/version-1.0.0-red?style=for-the-badge&logo=github)
@@ -436,4 +435,5 @@ Contributions are welcome.
 [⬆ Back to Top](#-rde-car-service--premium-vehicle-delivery--pickup-system)
 
 </div>
+
 
