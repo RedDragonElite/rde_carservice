@@ -4,8 +4,8 @@ lua54 'yes'
 
 name 'rde_vehicles'
 author 'RDE | SerpentsByte'
-version '1.0.0'
-description 'Car Delivery & Pickup Service System for ox_core'
+version '1.0.1'
+description 'Car Delivery & Pickup Service System for ox_core (STATEBAG EDITION)'
 
 shared_scripts {
     '@ox_lib/init.lua',

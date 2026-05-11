@@ -1,6 +1,6 @@
 --[[
     ╔═══════════════════════════════════════════════════════════════════════════╗
-    ║  🚘 RDE CAR SERVICE - SERVER v1.0                                         ║
+    ║  🚘 RDE CAR SERVICE - SERVER v1.0.1                                       ║
     ╚═══════════════════════════════════════════════════════════════════════════╝
 ]]
 
@@ -373,67 +373,51 @@ local function getPlayer(source)
 end
 
 -- ═══════════════════════════════════════════════════════════════════════════
--- 🎨 STATEBAG PROPERTY APPLICATION
+-- 📡 STATEBAG: Vehicle Properties Sync (RDE Standard)
 -- ═══════════════════════════════════════════════════════════════════════════
 
 ---@param netId number
 ---@param properties table
 ---@return boolean
-local function applyVehiclePropertiesViaStatebag(netId, properties)
+local function setVehiclePropertiesStatebag(netId, properties)
     if not netId or not properties or not next(properties) then
-        log('ERROR', 'Invalid netId or properties for statebag')
+        log('ERROR', 'setVehiclePropertiesStatebag: invalid netId or empty properties')
         return false
     end
 
     local vehicle = NetworkGetEntityFromNetworkId(netId)
     if not vehicle or vehicle == 0 or not DoesEntityExist(vehicle) then
-        log('ERROR', ('Vehicle doesn\'t exist (netId: %d)'):format(netId))
+        log('ERROR', ('setVehiclePropertiesStatebag: entity not found for netId %d'):format(netId))
         return false
     end
 
-    log('DEBUG', ('Setting statebag for netId: %d (entity: %d)'):format(netId, vehicle))
+    -- Set our own statebag key — replicated to all clients (broadcast = true)
+    Entity(vehicle).state:set('rde:vehicleProperties', properties, true)
 
-    -- Use Entity state for ox_lib compatibility
-    local state = Entity(vehicle).state
-    if state then
-        -- Set properties via statebag (ox_lib will handle this)
-        state:set('ox_lib:setVehicleProperties', properties, true)
-        log('SUCCESS', ('✅ Statebag set successfully for netId: %d'):format(netId))
-        return true
-    else
-        log('ERROR', ('Could not get entity state for netId: %d'):format(netId))
-        return false
-    end
+    log('SUCCESS', ('📡 Statebag rde:vehicleProperties set for netId %d'):format(netId))
+    return true
 end
 
 -- ═══════════════════════════════════════════════════════════════════════════
--- 📡 EVENT: Apply Properties via Statebag
+-- 📡 EVENT: Client reports spawned vehicle netId → Server sets statebag
 -- ═══════════════════════════════════════════════════════════════════════════
 
-RegisterNetEvent('rde_carservice:applyPropertiesViaStatebag', function(netId, properties)
+RegisterNetEvent('rde_carservice:vehicleSpawned', function(netId, plate)
     local source = source
+    local service = activeServices[source]
 
-    if not netId or not properties then
-        log('ERROR', ('Invalid data from source %d'):format(source))
+    if not service or service.type ~= 'delivery' or service.plate ~= plate then
+        log('WARN', ('vehicleSpawned: no matching active delivery for source=%d plate=%s'):format(source, plate))
         return
     end
 
-    log('INFO', ('📡 Received statebag request from source %d for netId %d'):format(source, netId))
+    if not service.vehicle or not next(service.vehicle.properties or {}) then
+        log('DEBUG', ('vehicleSpawned: no properties to sync for plate=%s'):format(plate))
+        return
+    end
 
-    -- Apply immediately
-    applyVehiclePropertiesViaStatebag(netId, properties)
-
-    -- Apply again after delays for reliability
-    CreateThread(function()
-        Wait(500)
-        applyVehiclePropertiesViaStatebag(netId, properties)
-
-        Wait(1000)
-        applyVehiclePropertiesViaStatebag(netId, properties)
-
-        Wait(2000)
-        applyVehiclePropertiesViaStatebag(netId, properties)
-    end)
+    log('INFO', ('📡 vehicleSpawned: setting statebag for netId=%d plate=%s'):format(netId, plate))
+    setVehiclePropertiesStatebag(netId, service.vehicle.properties)
 end)
 
 -- ═══════════════════════════════════════════════════════════════════════════
@@ -776,11 +760,11 @@ end
 -- 🚀 INITIALIZATION
 -- ═══════════════════════════════════════════════════════════════════════════
 
-log('SUCCESS', '═════════════════════════════════════════════════════════')
-log('SUCCESS', '   RDE | Car Service | Server v1.0 (FREE EDITION) loaded!')
-log('SUCCESS', '═════════════════════════════════════════════════════════')
+log('SUCCESS', '═══════════════════════════════════════════════════════════════')
+log('SUCCESS', '   RDE | Car Service | Server v1.0.1 (STATEBAG EDITION) loaded!')
+log('SUCCESS', '═══════════════════════════════════════════════════════════════')
 log('INFO', ('Delivery Cost: $%d | Pickup Cost: $%d'):format(DeliveryCost, PickupCost))
 log('INFO', ('Service Timeout: %ds | Debug Mode: %s'):format(ServiceTimeout, DebugMode and 'ON' or 'OFF'))
 log('INFO', ('Default Garage: %s'):format(DefaultGarage))
 log('INFO', '🔧 Property loading: Enhanced extraction from ox_core')
-log('SUCCESS', '═════════════════════════════════════════════════════════')
+log('SUCCESS', '══════════════════════════════════════════════════════════════')

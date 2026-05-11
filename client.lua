@@ -1,6 +1,6 @@
 --[[
     ╔═══════════════════════════════════════════════════════════════════════════╗
-    ║  🚘 RDE CAR SERVICE - CLIENT v1.0                                         ║
+    ║  🚘 RDE CAR SERVICE - CLIENT v1.0.1                                       ║
     ╚═══════════════════════════════════════════════════════════════════════════╝
 ]]
 
@@ -638,34 +638,14 @@ local function deliverVehicle(vehicleData)
 
     debugLog(("📋 Vehicle spawned: plate=%s, model=%s"):format(vehicleData.plate, vehicleData.model))
 
-    -- 🔥 FIXED: Apply properties with multiple attempts
-    if vehicleData.properties and next(vehicleData.properties) then
-        debugLog(("🔧 Starting property application for: %s"):format(vehicleData.plate))
-        
-        -- Wait for vehicle to be fully initialized
-        Wait(500)
-        
-        -- Attempt 1: Immediate application
-        local success1 = applyVehicleProperties(State.driverVehicle, vehicleData.properties)
-        
-        -- Attempt 2: After delay
-        Wait(1000)
-        local success2 = applyVehicleProperties(State.driverVehicle, vehicleData.properties)
-        
-        -- Attempt 3: Request server-side statebag application
-        local netId = NetworkGetNetworkIdFromEntity(State.driverVehicle)
-        if netId then
-            debugLog(("📡 Requesting server-side property application via statebag (netId: %d)"):format(netId))
-            TriggerServerEvent('rde_carservice:applyPropertiesViaStatebag', netId, vehicleData.properties)
-        end
-        
-        if success1 or success2 then
-            debugLog("✅ Properties applied successfully")
-        else
-            debugLog("⚠️ Property application may have failed, relying on statebag")
-        end
+    -- 📡 Notify server that vehicle is spawned → server sets rde:vehicleProperties statebag
+    -- AddStateBagChangeHandler (bottom of file) reacts and applies properties via lib.setVehicleProperties
+    local netId = NetworkGetNetworkIdFromEntity(State.driverVehicle)
+    if netId and vehicleData.properties and next(vehicleData.properties) then
+        debugLog(("📡 Reporting netId %d to server for statebag sync (plate: %s)"):format(netId, vehicleData.plate))
+        TriggerServerEvent('rde_carservice:vehicleSpawned', netId, vehicleData.plate)
     else
-        debugLog(("⚠️ No properties for: %s"):format(vehicleData.plate))
+        debugLog(("⚠️ No properties or no netId for: %s — skipping statebag sync"):format(vehicleData.plate))
     end
 
     -- Create driver
@@ -778,13 +758,6 @@ local function deliverVehicle(vehicleData)
 
                 TaskGoToEntity(State.driverPed, playerPed, -1, 2.0, Config.DrivingSpeed, 0, 0)
                 Wait(2000)
-
-                -- Final property application after arrival
-                if vehicleData.properties and next(vehicleData.properties) then
-                    debugLog("🔄 Final property check after delivery")
-                    Wait(500)
-                    applyVehicleProperties(State.driverVehicle, vehicleData.properties)
-                end
 
                 playArrivalEffect(driverCoords)
                 playSound('success')
@@ -1289,11 +1262,42 @@ AddEventHandler('onResourceStop', function(resource)
 end)
 
 -- ═══════════════════════════════════════════════════════════════════════════
+-- 📡 STATEBAG HANDLER: rde:vehicleProperties
+-- Server sets this bag on the spawned vehicle entity after client reports it.
+-- Handler fires on the owning client (and all clients if broadcast=true).
+-- ═══════════════════════════════════════════════════════════════════════════
+
+AddStateBagChangeHandler('rde:vehicleProperties', nil, function(bagName, _, value, _, _)
+    if not value or type(value) ~= 'table' or not next(value) then return end
+
+    local vehicle = GetEntityFromStateBagName(bagName)
+    if not vehicle or vehicle == 0 or not DoesEntityExist(vehicle) then return end
+    if GetEntityType(vehicle) ~= 2 then return end -- 2 = vehicle
+
+    debugLog(("📡 StateBag rde:vehicleProperties received for entity %d (%s)"):format(
+        vehicle, GetVehicleNumberPlateText(vehicle)
+    ))
+
+    -- Small wait so the vehicle is fully streamed before applying
+    CreateThread(function()
+        Wait(250)
+        if not DoesEntityExist(vehicle) then return end
+
+        local ok = pcall(lib.setVehicleProperties, vehicle, value)
+        if ok then
+            debugLog(("✅ Properties applied via statebag for entity %d"):format(vehicle))
+        else
+            debugLog(("⚠️ lib.setVehicleProperties failed for entity %d"):format(vehicle))
+        end
+    end)
+end)
+
+-- ═══════════════════════════════════════════════════════════════════════════
 -- 🚀 INITIALIZATION
 -- ═══════════════════════════════════════════════════════════════════════════
 
 CreateThread(function()
-    debugLog("✅ RDE | Car Service | Client v1.0 (FREE EDITION) loaded!")
+    debugLog("✅ RDE | Car Service | Client v1.0.1 (STATEBAG EDITION) loaded!")
     debugLog(("📋 Costs: Delivery $%d | Pickup $%d"):format(Config.DeliveryCost, Config.PickupCost))
     debugLog("🔧 Property loading: Enhanced with multi-attempt system")
     

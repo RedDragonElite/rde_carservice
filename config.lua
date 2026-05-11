@@ -1,6 +1,6 @@
 --[[
     ╔═══════════════════════════════════════════════════════════════════════════╗
-    ║  🚘 RDE CAR SERVICE - CONFIGURATION v1.0                                  ║
+    ║  🚘 RDE CAR SERVICE - CONFIGURATION v1.0.1                                ║
     ╚═══════════════════════════════════════════════════════════════════════════╝
 ]]
 
@@ -245,9 +245,9 @@ Config.Sounds = {
 -- ═══════════════════════════════════════════════════════════════════════════
 Config.Blips = {
     delivery = {
-        sprite = 225,           -- Car icon
-        color = 26,             -- Light Blue
-        scale = 0.9,
+        sprite = 523,           -- Car icon
+        color = 69,             -- Light Blue
+        scale = 0.6,
         flash = false,
         route = true,
         routeColor = 26,
