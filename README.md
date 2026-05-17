@@ -143,10 +143,10 @@ ensure rde_carservice
 
 | Dependency | Required | Notes |
 |---|---|---|
-| [oxmysql](https://github.com/communityox/oxmysql) | ✅ Required | Database layer |
-| [ox_core](https://github.com/communityox/ox_core) | ✅ Required | Player/character framework |
-| [ox_lib](https://github.com/communityox/ox_lib) | ✅ Required | UI, callbacks, notifications, `lib.setVehicleProperties` |
-| [ox_target](https://github.com/communityox/ox_target) | ⚠️ Optional | Right-click vehicle pickup |
+| [oxmysql](https://github.com/overextended/oxmysql) | ✅ Required | Database layer |
+| [ox_core](https://github.com/overextended/ox_core) | ✅ Required | Player/character framework |
+| [ox_lib](https://github.com/overextended/ox_lib) | ✅ Required | UI, callbacks, notifications, `lib.setVehicleProperties` |
+| [ox_target](https://github.com/overextended/ox_target) | ⚠️ Optional | Right-click vehicle pickup |
 
 > **Note:** rde_carservice requires FiveM server build `≥ 7290` (declared in `fxmanifest.lua`) — statebag broadcasting (`Entity(...).state:set(key, value, true)`) and `AddStateBagChangeHandler` require OneSync and modern server builds.
 
