@@ -1,6 +1,6 @@
 --[[
     ╔═══════════════════════════════════════════════════════════════════════════╗
-    ║  🚘 RDE CAR SERVICE - SERVER v1.0.1                                       ║
+    ║  🚘 RDE CAR SERVICE - SERVER v1.0                                         ║
     ╚═══════════════════════════════════════════════════════════════════════════╝
 ]]
 
@@ -32,10 +32,14 @@ local function getConfigValue(path, default)
                 return default
             end
         end
-        return value ~= nil and value or default
+        -- 🔧 FIX: must return value as-is if not nil, otherwise `false` configs flip to default.
+        -- Old `value ~= nil and value or default` returned default for boolean false values.
+        if value ~= nil then return value end
+        return default
     end
 
-    return Config[path] ~= nil and Config[path] or default
+    if Config[path] ~= nil then return Config[path] end
+    return default
 end
 
 local DeliveryCost = getConfigValue('DeliveryCost', 750)
@@ -354,6 +358,24 @@ local function loadVehicleProperties(plate)
         tostring(hasExtras ~= nil)
     ))
 
+    -- ═══════════════════════════════════════════════════════════════════
+    -- 🔧 SANITIZE: Convert all values to plain Lua types
+    -- rapidjson decodes arrays as userdata (lua_rapidjson_array) which
+    -- cannot be sent over statebags or used by lib.setVehicleProperties.
+    -- We re-encode → re-decode the entire table to flush all userdata.
+    -- ═══════════════════════════════════════════════════════════════════
+    local sanitizeOk, sanitized = pcall(function()
+        -- json round-trip forces rapidjson userdata → plain tables/arrays
+        return json.decode(json.encode(properties))
+    end)
+
+    if sanitizeOk and type(sanitized) == 'table' then
+        properties = sanitized
+        log('DEBUG', '✓ Properties sanitized (rapidjson userdata flushed)')
+    else
+        log('WARN', 'Properties sanitize failed — sending raw (may cause statebag issues)')
+    end
+
     return properties
 end
 
@@ -385,9 +407,22 @@ local function setVehiclePropertiesStatebag(netId, properties)
         return false
     end
 
-    local vehicle = NetworkGetEntityFromNetworkId(netId)
+    -- 🔧 FIX (CRITICAL): Wait for the server-side network entity to be registered.
+    -- When a client calls CreateVehicle(...networked=true), the entity is created
+    -- locally and a netId is assigned, but the server registers that netId only after
+    -- the client's network announcement packet arrives. The client's TriggerServerEvent
+    -- can outrun that registration by 50-300ms, so NetworkGetEntityFromNetworkId
+    -- returns 0 on the first try and the statebag never gets set.
+    -- This was the actual cause of "cars delivered without mods".
+    local vehicle
+    for attempt = 1, 50 do  -- up to 5s
+        vehicle = NetworkGetEntityFromNetworkId(netId)
+        if vehicle and vehicle ~= 0 and DoesEntityExist(vehicle) then break end
+        Wait(100)
+    end
+
     if not vehicle or vehicle == 0 or not DoesEntityExist(vehicle) then
-        log('ERROR', ('setVehiclePropertiesStatebag: entity not found for netId %d'):format(netId))
+        log('ERROR', ('setVehiclePropertiesStatebag: entity never appeared for netId %d after 5s'):format(netId))
         return false
     end
 
@@ -470,11 +505,16 @@ lib.callback.register('rde_carservice:requestDelivery', function(source, plate)
     log('INFO', ('Plate: "%s" | CharId: %d | Source: %d'):format(plate, player.charId, source))
 
     -- Fetch vehicle data
+    -- 🔧 FIX: Require stored IS NOT NULL so we never charge for a vehicle that's already
+    -- in the world (e.g. currently being driven). Previously the SELECT would succeed
+    -- even on unstored vehicles, money was taken, then the delivery would happen anyway
+    -- because the property of being "stored" wasn't enforced at request time.
     local success, vehicleResult = pcall(MySQL.query.await, [[
         SELECT plate, model, data
         FROM vehicles
         WHERE plate = ?
         AND owner = ?
+        AND stored IS NOT NULL
         LIMIT 1
     ]], {plate, player.charId})
 
@@ -485,8 +525,8 @@ lib.callback.register('rde_carservice:requestDelivery', function(source, plate)
     end
 
     if not vehicleResult or not vehicleResult[1] then
-        log('ERROR', ('No vehicle found for plate: %s'):format(plate))
-        return false, 'no_vehicle_found'
+        log('ERROR', ('No stored vehicle found for plate: %s (owner=%d)'):format(plate, player.charId))
+        return false, 'vehicle_not_stored'
     end
 
     -- Check money
@@ -667,6 +707,7 @@ RegisterNetEvent('rde_carservice:completePickup', function(plate)
 end)
 
 RegisterNetEvent('rde_carservice:cancelService', function()
+    local source = source  -- 🔧 FIX: capture source before any yielding call (good hygiene)
     log('INFO', ('Service cancelled by client: %d'):format(source))
     cleanupService(source, "cancelled_by_client")
 end)
@@ -676,6 +717,7 @@ end)
 -- ═══════════════════════════════════════════════════════════════════════════
 
 AddEventHandler('playerDropped', function(reason)
+    local source = source  -- 🔧 FIX: capture source explicitly
     if activeServices[source] then
         log('INFO', ('Player dropped during service: %d (reason: %s)'):format(source, reason))
         cleanupService(source, "player_disconnected")
@@ -760,11 +802,11 @@ end
 -- 🚀 INITIALIZATION
 -- ═══════════════════════════════════════════════════════════════════════════
 
-log('SUCCESS', '═══════════════════════════════════════════════════════════════')
-log('SUCCESS', '   RDE | Car Service | Server v1.0.1 (STATEBAG EDITION) loaded!')
-log('SUCCESS', '═══════════════════════════════════════════════════════════════')
+log('SUCCESS', '═════════════════════════════════════════════════════════')
+log('SUCCESS', '   RDE | Car Service | Server v1.0 (FREE EDITION) loaded!')
+log('SUCCESS', '═════════════════════════════════════════════════════════')
 log('INFO', ('Delivery Cost: $%d | Pickup Cost: $%d'):format(DeliveryCost, PickupCost))
 log('INFO', ('Service Timeout: %ds | Debug Mode: %s'):format(ServiceTimeout, DebugMode and 'ON' or 'OFF'))
 log('INFO', ('Default Garage: %s'):format(DefaultGarage))
 log('INFO', '🔧 Property loading: Enhanced extraction from ox_core')
-log('SUCCESS', '══════════════════════════════════════════════════════════════')
+log('SUCCESS', '═════════════════════════════════════════════════════════')

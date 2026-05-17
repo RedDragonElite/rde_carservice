@@ -1,6 +1,6 @@
 --[[
     ╔═══════════════════════════════════════════════════════════════════════════╗
-    ║  🚘 RDE CAR SERVICE - CLIENT v1.0.1                                       ║
+    ║  🚘 RDE CAR SERVICE - CLIENT v1.0                                         ║
     ╚═══════════════════════════════════════════════════════════════════════════╝
 ]]
 
@@ -28,13 +28,15 @@ Config.SpawnDistance = Config.SpawnDistance or 200
 Config.DrivingSpeed = Config.DrivingSpeed or 15.0
 Config.DrivingStyle = Config.DrivingStyle or 786603
 Config.CleanupDelay = Config.CleanupDelay or 10000
-Config.Debug = Config.Debug or true
+-- 🔧 FIX: `Config.Debug or true` evaluated to `true` even when Config.Debug was explicitly false.
+-- Use a nil-check so users can actually disable debug.
+if Config.Debug == nil then Config.Debug = true end
 
 Config.DriverModels = Config.DriverModels or {
-    `a_m_m_business_01`,
-    `a_m_y_business_01`,
-    `a_m_y_business_02`,
-    `a_m_y_vinewood_01`
+    'a_m_m_business_01',
+    'a_m_y_business_01',
+    'a_m_y_business_02',
+    'a_m_y_vinewood_01'
 }
 
 Config.Effects = {
@@ -51,12 +53,20 @@ Config.Effects = {
 ---@param modelInput string|number
 ---@return number|nil
 local function getValidModel(modelInput)
+    local hash
     if type(modelInput) == 'string' then
-        return joaat(modelInput)
+        -- Strip backtick literals if somehow stored as string
+        local stripped = modelInput:match('^`(.+)`$') or modelInput
+        if stripped == '' then return nil end  -- 🔧 FIX: avoid joaat("") = 0
+        hash = joaat(stripped)
     elseif type(modelInput) == 'number' then
-        return modelInput
+        hash = modelInput
     end
-    return nil
+    -- Note: do NOT gate on IsModelValid() here — Add-On / DLC vehicles return false
+    -- until the model is requested+streamed. requestModel handles this correctly.
+    -- 🔧 FIX: hash 0 is "truthy" in Lua but invalid for CreateVehicle — drop it.
+    if not hash or hash == 0 then return nil end
+    return hash
 end
 
 ---@param modelInput string|number
@@ -296,18 +306,35 @@ end
 ---@param heading number
 ---@return number|nil
 local function createDriver(coords, heading)
-    local model = Config.DriverModels[math.random(#Config.DriverModels)]
+    -- Config.DriverModels entries written as backtick literals (`s_m_m_valet_01`) are
+    -- compiled to hash numbers by Lua at resource load time. We must handle both types.
+    local rawModel = Config.DriverModels[math.random(#Config.DriverModels)]
 
-    if not lib.requestModel(model, 10000) then
-        debugLog(("Failed to load driver model: %s"):format(model))
+    local modelHash
+    if type(rawModel) == 'number' then
+        modelHash = rawModel
+    else
+        -- Plain string: strip optional backticks and hash
+        local stripped = rawModel:match('^`(.+)`$') or rawModel
+        modelHash = joaat(stripped)
+    end
+
+    -- Validate before attempting to stream — avoids "attempted to load invalid model" crash
+    if not IsModelValid(modelHash) then
+        debugLog(('⚠️ createDriver: model hash %d invalid, falling back to a_m_m_business_01'):format(modelHash))
+        modelHash = joaat('a_m_m_business_01')
+    end
+
+    if not lib.requestModel(modelHash, 10000) then
+        debugLog(('createDriver: lib.requestModel timed out for hash %d'):format(modelHash))
         return nil
     end
 
-    local ped = CreatePed(4, model, coords.x, coords.y, coords.z, heading, true, true)
+    local ped = CreatePed(4, modelHash, coords.x, coords.y, coords.z, heading, true, true)
+    SetModelAsNoLongerNeeded(modelHash)
 
-    if not DoesEntityExist(ped) then
-        debugLog("Failed to create driver ped")
-        SetModelAsNoLongerNeeded(model)
+    if not DoesEntityExist(ped) or ped == 0 then
+        debugLog('createDriver: CreatePed returned invalid entity')
         return nil
     end
 
@@ -315,12 +342,16 @@ local function createDriver(coords, heading)
     SetBlockingOfNonTemporaryEvents(ped, true)
     SetPedFleeAttributes(ped, 0, false)
     SetPedCombatAttributes(ped, 17, true)
-    SetPedRelationshipGroupHash(ped, joaat("CIVMALE"))
+    SetPedRelationshipGroupHash(ped, joaat('CIVMALE'))
     SetPedRandomComponentVariation(ped, true)
     SetPedKeepTask(ped, true)
     SetEntityInvincible(ped, true)
     SetPedCanRagdoll(ped, false)
-    SetModelAsNoLongerNeeded(model)
+
+    -- 🏷️ Statebag: mark as RDE service ped — local scope only (broadcast=false)
+    -- No event spam: any system that needs to identify this ped reads the statebag
+    Entity(ped).state:set('rde:isServicePed', true, false)
+    Entity(ped).state:set('rde:pedSpawnedAt', GetGameTimer(), false)
 
     return ped
 end
@@ -562,7 +593,11 @@ local function deliverVehicle(vehicleData)
     local playerCoords = GetEntityCoords(playerPed)
     local spawnCoords, spawnHeading = calculateSpawnPosition(playerCoords)
 
-    local vehicleModel = getValidModel(vehicleData.model)
+    -- Always prefer the raw model string for requestModel — Add-On vehicles need the
+    -- string so FiveM can look up the streaming name. Pre-hashing causes the
+    -- "attempted to load invalid model '233628783'" crash when the hash isn't registered yet.
+    local modelForRequest = vehicleData.model  -- keep as string if possible
+    local vehicleModel    = getValidModel(vehicleData.model)  -- hash for CreateVehicle
     if not vehicleModel then
         lib.notify({
             title = 'Car Service',
@@ -595,7 +630,7 @@ local function deliverVehicle(vehicleData)
         startPhoneAnimation()
     end
 
-    if not lib.requestModel(vehicleModel, 15000) then
+    if not lib.requestModel(modelForRequest, 15000) then
         lib.notify({
             title = 'Car Service',
             description = 'Fahrzeug konnte nicht geladen werden',
@@ -636,11 +671,45 @@ local function deliverVehicle(vehicleData)
     SetVehicleFuelLevel(State.driverVehicle, 65.0)
     SetModelAsNoLongerNeeded(vehicleModel)
 
+    -- 🏷️ Global State: mark as RDE service vehicle so other scripts/anticheat don't interfere
+    -- broadcast=true → server + all clients can read it without any TriggerEvent spam
+    local netId = NetworkGetNetworkIdFromEntity(State.driverVehicle)
+    if NetworkDoesNetworkIdExist(netId) then
+        Entity(State.driverVehicle).state:set('rde:isServiceVehicle', true, true)
+        Entity(State.driverVehicle).state:set('rde:servicePlate', vehicleData.plate, true)
+    end
+
     debugLog(("📋 Vehicle spawned: plate=%s, model=%s"):format(vehicleData.plate, vehicleData.model))
+
+    -- ═══════════════════════════════════════════════════════════════════
+    -- 🔧 FIX (CRITICAL): Apply properties DIRECTLY on the owning client.
+    --
+    -- The previous version relied 100% on the statebag round-trip
+    -- (client → server → statebag → client handler). That flow has TWO
+    -- race conditions that caused "car arrives without mods":
+    --   1. Server's NetworkGetEntityFromNetworkId(netId) returns 0 if the
+    --      server hasn't yet registered the entity that the client just
+    --      networked-created.
+    --   2. The client's AddStateBagChangeHandler fires before the entity
+    --      is fully synced and bails on `entity == 0` — and only fires
+    --      ONCE per change, so the apply is permanently lost.
+    --
+    -- Since this client is the entity OWNER (it just called CreateVehicle),
+    -- we can — and should — apply properties directly. RAGE's standard
+    -- vehicle mod replication takes care of broadcasting mod state to
+    -- nearby clients via normal entity sync; the statebag below is a
+    -- redundant safety net for late-joiners / re-stream events.
+    -- ═══════════════════════════════════════════════════════════════════
+    if vehicleData.properties and next(vehicleData.properties) then
+        local applyOk = applyVehicleProperties(State.driverVehicle, vehicleData.properties)
+        debugLog(("🔧 Direct apply on owner: %s"):format(tostring(applyOk)))
+    else
+        debugLog("ℹ️ No properties returned from server — vehicle stays default")
+    end
 
     -- 📡 Notify server that vehicle is spawned → server sets rde:vehicleProperties statebag
     -- AddStateBagChangeHandler (bottom of file) reacts and applies properties via lib.setVehicleProperties
-    local netId = NetworkGetNetworkIdFromEntity(State.driverVehicle)
+    -- netId already set above when writing the isServiceVehicle statebag
     if netId and vehicleData.properties and next(vehicleData.properties) then
         debugLog(("📡 Reporting netId %d to server for statebag sync (plate: %s)"):format(netId, vehicleData.plate))
         TriggerServerEvent('rde_carservice:vehicleSpawned', netId, vehicleData.plate)
@@ -1263,31 +1332,73 @@ end)
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- 📡 STATEBAG HANDLER: rde:vehicleProperties
--- Server sets this bag on the spawned vehicle entity after client reports it.
--- Handler fires on the owning client (and all clients if broadcast=true).
+-- Server sets this bag on the spawned vehicle entity. Handler fires on every
+-- client in scope (including the owner) and applies properties via ox_lib.
+--
+-- 🔧 FIX: previously this handler bailed early if GetEntityFromStateBagName
+-- returned 0 (entity not yet streamed). Per official FiveM docs, the handler
+-- can fire before the entity is fully synced — early-return permanently loses
+-- the apply because the handler only fires once per state change. We now wait
+-- for the entity inside an isolated thread.
+--
+-- Note: on the owner client, properties are also applied directly in
+-- deliverVehicle() right after CreateVehicle. This handler re-applies (mostly
+-- idempotent on the owner) and is the *only* apply path for non-owning clients
+-- such as passengers or bystanders who see the vehicle stream in.
 -- ═══════════════════════════════════════════════════════════════════════════
 
 AddStateBagChangeHandler('rde:vehicleProperties', nil, function(bagName, _, value, _, _)
     if not value or type(value) ~= 'table' or not next(value) then return end
 
-    local vehicle = GetEntityFromStateBagName(bagName)
-    if not vehicle or vehicle == 0 or not DoesEntityExist(vehicle) then return end
-    if GetEntityType(vehicle) ~= 2 then return end -- 2 = vehicle
-
-    debugLog(("📡 StateBag rde:vehicleProperties received for entity %d (%s)"):format(
-        vehicle, GetVehicleNumberPlateText(vehicle)
-    ))
-
-    -- Small wait so the vehicle is fully streamed before applying
+    -- Run in isolated thread so retries can yield and errors here NEVER
+    -- propagate to the delivery flow.
     CreateThread(function()
-        Wait(250)
+        -- Wait up to ~5s for the entity to be known/streamed on this client.
+        -- This handles two distinct cases:
+        --   - Owner: entity exists immediately, loop breaks first attempt.
+        --   - Non-owner (passenger, bystander): may need to wait for streaming.
+        local vehicle = 0
+        for attempt = 1, 50 do
+            vehicle = GetEntityFromStateBagName(bagName)
+            if vehicle and vehicle ~= 0 and DoesEntityExist(vehicle) then break end
+            Wait(100)
+        end
+
+        if not vehicle or vehicle == 0 or not DoesEntityExist(vehicle) then
+            return  -- Entity went out of scope before we could apply
+        end
+        if GetEntityType(vehicle) ~= 2 then return end  -- 2 = vehicle
+
+        debugLog(("📡 StateBag rde:vehicleProperties received for entity %d (%s)"):format(
+            vehicle, GetVehicleNumberPlateText(vehicle)
+        ))
+
+        -- Wait until vehicle model is fully streamed (up to 3s)
+        local modelAttempts = 0
+        while modelAttempts < 20 do
+            if not DoesEntityExist(vehicle) then return end
+            if GetEntityModel(vehicle) ~= 0 then break end
+            Wait(150)
+            modelAttempts = modelAttempts + 1
+        end
+
         if not DoesEntityExist(vehicle) then return end
 
-        local ok = pcall(lib.setVehicleProperties, vehicle, value)
+        -- Sanitize client-side: json round-trip flushes any residual rapidjson userdata
+        local safeValue = value
+        local reOk, reDecoded = pcall(function()
+            return json.decode(json.encode(value))
+        end)
+        if reOk and type(reDecoded) == 'table' then
+            safeValue = reDecoded
+        end
+
+        local ok, err = pcall(lib.setVehicleProperties, vehicle, safeValue)
         if ok then
             debugLog(("✅ Properties applied via statebag for entity %d"):format(vehicle))
         else
-            debugLog(("⚠️ lib.setVehicleProperties failed for entity %d"):format(vehicle))
+            -- Non-fatal: log and move on, delivery continues regardless
+            debugLog(("⚠️ lib.setVehicleProperties failed for entity %d: %s"):format(vehicle, tostring(err)))
         end
     end)
 end)
@@ -1297,7 +1408,7 @@ end)
 -- ═══════════════════════════════════════════════════════════════════════════
 
 CreateThread(function()
-    debugLog("✅ RDE | Car Service | Client v1.0.1 (STATEBAG EDITION) loaded!")
+    debugLog("✅ RDE | Car Service | Client v1.0 (FREE EDITION) loaded!")
     debugLog(("📋 Costs: Delivery $%d | Pickup $%d"):format(Config.DeliveryCost, Config.PickupCost))
     debugLog("🔧 Property loading: Enhanced with multi-attempt system")
     

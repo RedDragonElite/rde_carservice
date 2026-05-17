@@ -1,558 +1,489 @@
-# 🐉 rde_mechanic
+# 🚗 RDE Car Service — Vehicle Delivery & Pickup System
 
-[![Version](https://img.shields.io/badge/version-2.1.0-red?style=for-the-badge)](https://github.com/RedDragonElite/rde_mechanic)
-[![License](https://img.shields.io/badge/license-RDE%20Black%20Flag-black?style=for-the-badge)](https://github.com/RedDragonElite/rde_mechanic/blob/main/LICENSE)
+[![Version](https://img.shields.io/badge/version-1.0.2-red?style=for-the-badge)](https://github.com/RedDragonElite/rde_carservice)
+[![License](https://img.shields.io/badge/license-RDE%20Black%20Flag-black?style=for-the-badge)](./LICENSE)
+[![Framework](https://img.shields.io/badge/Framework-ox__core-blue?style=for-the-badge)](https://github.com/overextended/ox_core)
+[![ox_lib](https://img.shields.io/badge/UI-ox__lib-purple?style=for-the-badge)](https://github.com/overextended/ox_lib)
 [![FiveM](https://img.shields.io/badge/FiveM-Compatible-blue?style=for-the-badge)](https://fivem.net)
-[![ox_core](https://img.shields.io/badge/Framework-ox__core-blue?style=for-the-badge)](https://github.com/overextended/ox_core)
-[![Nostr](https://img.shields.io/badge/Nostr-Decentralized-purple?style=for-the-badge)](https://github.com/RedDragonElite/rde_nostr_log)
-[![Quality](https://img.shields.io/badge/Quality-Production-gold?style=for-the-badge)](https://github.com/RedDragonElite)
+[![Free](https://img.shields.io/badge/Price-FREE%20FOREVER-green?style=for-the-badge)](https://github.com/RedDragonElite)
+[![Status](https://img.shields.io/badge/status-STABLE-brightgreen?style=for-the-badge)](https://github.com/RedDragonElite/rde_carservice)
 
-**🔧 RDE MECHANIC | Next-Gen Vehicle Mechanic & Tuner for FiveM ox_core | Full Mod Preview | Orbit Camera | StateBag-Synced | Nostr-Logged | Production-Ready**
+<img width="1024" height="1024" alt="image" src="https://github.com/user-attachments/assets/1f974250-1b15-46d7-b074-0dbc0680ecf8" />
 
-*Built by [Red Dragon Elite](https://rd-elite.com) | Free Forever | No Paywalls | No Legacy*
-
-[📖 Installation](#-installation) • [⚙️ Configuration](#️-configuration) • [🌍 Locales](#-locales) • [🐉 Nostr Logging](#-nostr-logging) • [📡 Events & Callbacks](#-events--callbacks) • [🐛 Troubleshooting](#-troubleshooting) • [🌐 Website](https://rd-elite.com)
+> **Ultra-realistic vehicle valet service with professional AI drivers, full property preservation, and cinematic animations.**
+> Built by [Red Dragon Elite](https://rd-elite.com) — Free Forever. No Paywalls. No Gatekeepers.
 
 ---
 
-## 🔥 Why This Destroys Every Other Mechanic Script
+## 🔥 What is rde_carservice?
 
-Every other mechanic/tuner script is either paid, ESX/QB-only, or a static menu with zero preview and brain-dead ped behavior.
+**rde_carservice** is a complete, production-ready vehicle delivery and pickup system for FiveM servers running **ox_core**. Request professional valet drivers to deliver your stored vehicles directly to your location, or have them picked up and safely stored in your garage. Every customization, every modification — perfectly preserved via dual-path property sync.
 
-We said no.
+### Why this changes everything
 
-| ❌ Other Mechanic Scripts | ✅ rde_mechanic |
+| ❌ Generic Scripts | ✅ rde_carservice |
 |---|---|
-| Static menus, no preview | Live mod preview with confirm/cancel on every part |
-| Camera goes nowhere useful | Smooth orbit camera circles the car during tuning |
-| Ped teleports to engine | Mechanic walks to the hood, faces it, opens it, animates, closes it, walks back |
-| ESX / QBCore bloat | ox_core only — the future, not the past |
-| Discord webhooks (deletable) | Decentralized Nostr logging — permanent & uncensorable |
-| One language | Full EN / DE multilanguage out of the box |
-| Paid or locked down | 100% free forever — RDE Black Flag |
+| Partial property preservation | ✅ 100% — mods, colors, neon, extras |
+| No AI drivers | ✅ 9 driver models, traffic-aware |
+| No animations | ✅ Phone call, parking, key handover |
+| Legacy framework dependency | ✅ Pure ox_core — zero legacy code |
+| Properties lost on spawn | ✅ Race-proof dual-path sync (owner-direct + statebag broadcast) |
+| No security | ✅ Ownership validation, rate limiting, stored-state enforcement |
 
 ---
 
-### 🎯 Key Features
+## 📋 Changelog
 
-- 🔧 **Full Mechanic Animation Sequence** — walks to hood, faces it, opens it, animates with tool prop, closes hood, steps back, walks home. Zero teleports.
-- 👁️ **Live Mod Preview** — every single mod, wheel, color, neon: preview it on the car before paying. Cancel = instant revert.
-- 📸 **Orbit Camera** — during tuning the camera slowly circles the car. Fully configurable speed, radius, height, FOV. Maus stays free for the menu.
-- 🔄 **StateBag Multiplayer Sync** — repair state, preview state, mechanic phase — all synced via StateBags to every nearby client in real time
-- 🐉 **Nostr Logging** — decentralized, cryptographically signed, uncensorable purchase & repair logs
-- 💰 **Dynamic Pricing** — vehicle class multipliers, high-end tier pricing, separate color/wheel pricing
-- 🛡️ **Server-Side Authority** — all purchases and repairs validated server-side. No client-sided exploit possible.
-- 📦 **Full Mod Coverage** — 65+ mod types, 15 wheel categories with named rims, 7 color categories, neon with 14 RGB presets, window tint, extras, liveries
-- 🌍 **Multilanguage** — EN / DE out of the box, add any language in minutes
-- ⚙️ **Zero-Config Start** — sensible defaults, DB tables auto-create, no SQL import needed
-- 🔑 **Admin Panel** — in-game mechanic creation & deletion with ACE/ox_core group auth
+### v1.0.2 — Race Condition Hardening & Defense-in-Depth Sync
+
+> **Tested in live multiplayer.** All vehicles arrive with full mods every time, across multiple consecutive deliveries, with multiple players online. The v1.0.1 statebag rewrite was architecturally clean but exposed two race conditions that caused vehicles to occasionally — and on busier servers, frequently — arrive stripped of all customizations. v1.0.2 fixes both and adds a direct apply path on the owning client as a defense-in-depth safety net.
+
+**🔴 The races (both fixed)**
+
+1. **Server-side network entity registration race.** When a client calls `CreateVehicle(...networked=true)`, the client receives a `netId` immediately and triggers `rde_carservice:vehicleSpawned` — but the server registers that `netId` in its network entity pool only after the client's network announcement packet arrives, which can lag by 50–300 ms depending on tick rate and network conditions. The v1.0.1 server's `NetworkGetEntityFromNetworkId(netId)` would return `0` on the first attempt, `setVehiclePropertiesStatebag` would bail with an error, the statebag was never set, and mods were silently dropped. This was the actual cause of "delivered without mods" being a near-100% repro on lower-tickrate servers.
+
+2. **Client-side statebag handler entity-not-streamed race.** [Per official FiveM docs](https://github.com/citizenfx/fivem/blob/master/ext/native-decls/AddStateBagChangeHandler.md), `AddStateBagChangeHandler` can fire before the entity is fully synced on the receiving client — `GetEntityFromStateBagName()` returns `0`. The v1.0.1 handler bailed with an early `return` in that case, but **the handler only fires once per state change**, so the apply was permanently lost for that delivery.
+
+**🔧 The fixes**
+
+- **Server (`setVehiclePropertiesStatebag`):** retry loop, up to 50 × 100 ms, waits for `NetworkGetEntityFromNetworkId` to return a valid registered entity before setting the statebag. Worst-case 5 s timeout with an explicit error log if the entity never appears.
+- **Client (`AddStateBagChangeHandler`):** the entity-existence check now lives inside the `CreateThread`, retrying up to 5 s for streaming to complete instead of bailing. Distinguishes owner case (immediate hit) from non-owner case (passenger / bystander streaming) and handles both correctly.
+- **Client (`deliverVehicle`):** properties are now applied **directly** via `lib.setVehicleProperties()` on the owning client immediately after `CreateVehicle()`. RAGE's native entity sync replicates the standard mod state to all clients in range. The statebag flow continues to fire as a redundant safety net for late-joiners and re-stream events. Both paths are idempotent.
+
+**🛡️ Bonus hardening (silent bugs swept on the way)**
+
+- **`Config.Debug = Config.Debug or true`** evaluated to `true` even when explicitly set to `false` — classic Lua falsy-or-default antipattern. Fixed with explicit `if Config.Debug == nil then ...` nil-check. Same fix applied to the server's `getConfigValue` helper, which had the equivalent `value ~= nil and value or default` pattern that flipped boolean `false` configs back to default.
+- **Delivery callback** now requires `AND stored IS NOT NULL` in the `SELECT` — previously the query returned any vehicle owned by the player and money was deducted before checking whether the vehicle was actually in a garage. Returns the `vehicle_not_stored` error code which already existed in the client's error message table.
+- **`getValidModel`** returns `nil` instead of `0` for empty strings — `joaat("")` returns `0` which is truthy in Lua, so a corrupt model string would slip through and `CreateVehicle(0, ...)` would silently fail downstream with no useful error.
+- **`source` captured locally** at the top of `playerDropped` and `cancelService` handlers — good hygiene for any handler that may yield (the FiveM `source` global gets rebound per-event and is unsafe across `Wait` calls).
+
+### v1.0.1 — Statebag Property Sync Rewrite
+- Replaced 3 sequential `applyVehicleProperties()` attempts and the broken `TriggerServerEvent`-into-`ox_lib:setVehicleProperties` pattern with a clean statebag-based flow on an RDE-owned key (`rde:vehicleProperties`).
+- Server-authoritative property loading and write; client reacts via `AddStateBagChangeHandler`.
+- *(v1.0.2 note: the v1.0.1 architecture was correct in principle but missed the two FiveM-internal timing races that v1.0.2 hardens against.)*
+
+### v1.0.0
+- Initial release — delivery and pickup system, ox_core native, full property extraction (5-method), animated blips, phone animations, ox_target integration
 
 ---
 
-## 📸 Screenshots
+## ✨ Features
 
-> Coming soon — drop a PR with your screenshots!
+### 🚘 Vehicle Delivery System
+
+**Intelligent Spawn System**
+- Spawns 200 m from player on actual roads
+- 25-iteration pathfinding for perfect road placement
+- Ground level verification & collision detection
+- Navmesh-based road snapping
+
+**Professional Drivers**
+- 9 realistic driver models (valet, pilot, business)
+- Follows traffic laws and signals
+- Realistic parking sequences with precision timing
+- Natural walk-away behavior after handover
+
+**Full Property Preservation — Race-Proof**
+- Engine, brakes, transmission upgrades
+- All visual mods (bumpers, spoilers, exhausts)
+- Custom colors & paint jobs
+- Neon lights, window tints, wheels
+- Extras (turbo, xenon headlights)
+- 5-method extraction for ox_core compatibility
+- **Dual-path application** — owner-side direct apply for instant first-paint correctness, statebag broadcast for cross-client + late-joiner consistency
+- Tested across consecutive deliveries with multiple clients — zero strip-on-spawn regressions
+
+**Cinematic Experience**
+- Phone call animations with props
+- 4-second precision parking sequence
+- 3-second key handover animation
+- Particle effects on arrival
+
+### 📞 Vehicle Pickup System
+- On-demand retrieval via right-click (ox_target) or menu
+- AI driver navigates to the vehicle's exact location
+- Automatic storage in configured garage
+- Complete entity cleanup after completion
+
+### 🎨 UI / UX
+- ox_lib context menus — clean, responsive vehicle selection
+- Animated pulsating blips with route paths
+- Progress bars for phone calls and actions
+- Native GTA V sound effects
+- 4-tier notification system (info / success / warning / error)
+
+### 💰 Economy Integration
+- Configurable pricing — Delivery: `$750`, Pickup: `$500`
+- ox_inventory money deduction
+- Built-in delivery / pickup / earnings statistics
+- Admin command for server-side monitoring
+- **Money never deducted for vehicles not actually in a garage** (v1.0.2)
+
+### 🔒 Security & Performance
+- Database ownership validation before any operation
+- `stored IS NOT NULL` enforcement at request time — no charging for in-world vehicles
+- Anti-spam: active service lock per player
+- 10-minute service timeout with automatic cleanup
+- `rde_carservice:vehicleSpawned` validated against `activeServices` — clients cannot trigger statebag writes for vehicles they don't own
+- `source` captured locally across all event handlers — yield-safe
+- Optimized threads with dynamic cleanup
 
 ---
 
 ## 📦 Dependencies
 
 ```
-oxmysql        → https://github.com/overextended/oxmysql
-ox_lib         → https://github.com/overextended/ox_lib
-ox_core        → https://github.com/overextended/ox_core
-ox_inventory   → https://github.com/overextended/ox_inventory
-ox_target      → https://github.com/overextended/ox_target
-
-optional:
-rde_nostr_log  → https://github.com/RedDragonElite/rde_nostr_log
+# server.cfg — CRITICAL: start in this exact order!
+ensure oxmysql
+ensure ox_lib
+ensure ox_core
+ensure ox_target
+ensure rde_carservice
 ```
+
+| Dependency | Required | Notes |
+|---|---|---|
+| [oxmysql](https://github.com/communityox/oxmysql) | ✅ Required | Database layer |
+| [ox_core](https://github.com/communityox/ox_core) | ✅ Required | Player/character framework |
+| [ox_lib](https://github.com/communityox/ox_lib) | ✅ Required | UI, callbacks, notifications, `lib.setVehicleProperties` |
+| [ox_target](https://github.com/communityox/ox_target) | ⚠️ Optional | Right-click vehicle pickup |
+
+> **Note:** rde_carservice requires FiveM server build `≥ 7290` (declared in `fxmanifest.lua`) — statebag broadcasting (`Entity(...).state:set(key, value, true)`) and `AddStateBagChangeHandler` require OneSync and modern server builds.
 
 ---
 
 ## 🚀 Installation
 
-### Step 1: Clone or download
-
 ```bash
+# 1. Clone into your resources folder
 cd resources
-git clone https://github.com/RedDragonElite/rde_mechanic.git
+git clone https://github.com/RedDragonElite/rde_carservice.git
 ```
 
-### Step 2: Add to server.cfg
+```cfg
+# 2. Add to server.cfg
 
-```
-# Dependencies first — order matters!
 ensure oxmysql
 ensure ox_lib
 ensure ox_core
-ensure ox_inventory
-ensure ox_target
-
-# Optional: Nostr logging (highly recommended)
-ensure rde_nostr_log
-
-# The mechanic & tuner
-ensure rde_mechanic
+ensure ox_target      # optional
+ensure rde_carservice
 ```
 
-### Step 3: Configure
+> **Order matters.** `rde_carservice` must start **after** all its dependencies.
 
-Edit `config.lua` — sensible defaults work out of the box. See [Configuration](#️-configuration).
+### Database
 
-### Step 4: Start your server
+No manual SQL import needed. Works with the existing ox_core `vehicles` table. Ensure it has these columns:
 
-That's it. No SQL import needed — tables auto-create on first run. Walk up to the ox_target zone at any mechanic NPC and press `E`.
+```
+plate   VARCHAR  — license plate identifier
+owner   INT      — character ID from ox_core
+model   VARCHAR  — vehicle model hash
+data    JSON     — vehicle properties (ox_core format)
+stored  VARCHAR  — garage name, NULL when spawned
+```
+
+### Configure (Optional)
+
+Edit `config.lua`:
+
+```lua
+Config.DeliveryCost   = 750              -- Delivery price
+Config.PickupCost     = 500              -- Pickup price
+Config.DefaultGarage  = 'legion_garage'  -- Your garage name
+Config.Locale         = 'en'             -- 'en' or 'de'
+Config.Debug          = false            -- Dev debug mode (v1.0.2: now actually respects `false`)
+```
+
+```
+# 5. Restart & Test
+refresh
+restart rde_carservice
+```
+
+Test with `/carservice` in-game.
 
 ---
 
 ## ⚙️ Configuration
 
-`config.lua` is fully self-documented. Every block has comments. Key sections:
+All configuration lives in `config.lua`. Key settings:
 
-### Language & Debug
+### Pricing
 
 ```lua
-Config.DefaultLanguage = 'en'   -- 'en' or 'de'
+Config.DeliveryCost = 750    -- Standard delivery fee
+Config.PickupCost   = 500    -- Standard pickup fee
+```
 
-Config.Debug = {
-    enabled   = false,          -- set true to enable console logging
-    logLevel  = 'INFO',         -- 'INFO' | 'WARN' | 'ERROR'
+### Driver Models
+
+```lua
+Config.DriverModels = {
+    `a_m_m_business_01`,
+    `a_m_y_business_01`,
+    `a_m_y_business_02`,
+    `a_m_y_vinewood_01`,
 }
 ```
 
-### Repair
+### Spawn Distance
 
 ```lua
-Config.Repair = {
-    basePrice             = 500,
-    pricePerDamage        = 0.5,
-    maxPrice              = 10000,
-    engineHealthThreshold = 950.0,   -- below this = damaged
-    bodyHealthThreshold   = 950.0,
-    minRepairTime         = 5000,    -- ms
-    maxRepairTime         = 30000,   -- ms
-    damageTimeMultiplier  = 10,      -- more damage = longer repair
+Config.SpawnDistance = 200.0   -- Meters from player
+```
+
+### Timing
+
+```lua
+Config.Timing = {
+    serviceTimeout = 600,   -- Seconds before active service expires
 }
 ```
 
-### Orbit Camera
+### Effects (Performance Tuning)
 
 ```lua
-Config.TuningCamera = {
-    enabled       = true,    -- false = normal gameplay cam stays
-    radius        = 7.0,     -- distance from vehicle center (meters)
-    height        = 1.8,     -- height above vehicle center (meters)
-    fov           = 55.0,    -- field of view in degrees
-    degreesPerSec = 18.0,    -- rotation speed (positive = counter-clockwise from above)
-    startAngle    = 160.0,   -- starting angle (0 = behind car, 90 = left side, 180 = front)
-    fadeInMs      = 800,     -- camera fade-in duration (ms)
-    fadeOutMs     = 600,     -- camera fade-out duration (ms)
+Config.Effects = {
+    enableParticles     = true,
+    enableSounds        = true,
+    enableBlipAnimation = true,
+    enableProgressBars  = true,
 }
 ```
 
-### Mechanic Behavior
+### Driving Behavior
 
 ```lua
-Config.MechanicBehavior = {
-    invincible     = true,
-    freezePosition = true,
-    blockEvents    = true,
-    canRagdoll     = false,
-    walkSpeed      = 1.0,
-    animations     = {
-        { dict='mini@repair', name='fixing_a_ped', tool='prop_tool_spanner02', bone=28422, loops=3 },
-    }
-}
-```
-
-### Admin
-
-```lua
-Config.Admin = {
-    acePermission = 'rde.mechanic.admin',
-    oxGroups      = { 'admin', 'superadmin', 'moderator', 'owner', 'dev' },
-}
-```
-
-### Nostr Config
-
-```lua
-Config.NostrLog = {
-    enabled            = true,
-    logPurchases       = true,
-    logRepairs         = true,
-    logAdminCreate     = true,
-    logAdminDelete     = true,
-    expensiveThreshold = 5000,   -- log to Nostr if mod costs more than this
-    serverTag          = 'rde_mechanic',
-}
+Config.DrivingSpeed = 15.0     -- m/s
+Config.DrivingStyle = 786603   -- Traffic-aware, no red-light running
 ```
 
 ---
 
-## 🌍 Locales
+## 📡 Property Sync — How It Works (v1.0.2 Architecture)
 
-All user-facing text lives in `Config.Languages` inside `config.lua`. Switch language:
+Vehicle property sync uses a **dual-path** architecture: direct apply on the owning client for immediate visual correctness, statebag broadcast for cross-client + late-joiner consistency. This is the same defense-in-depth pattern the RDE ecosystem standardized on after the v1.0.2 race-condition hardening pass.
 
-```lua
-Config.DefaultLanguage = 'de'   -- config.lua
+### The flow
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  1. CLIENT → SERVER       lib.callback.await('requestDelivery')     │
+│  2. SERVER                 Load properties from DB                  │
+│                            Stash in activeServices[source]          │
+│                            Return vehicleData to client             │
+│  3. CLIENT                 CreateVehicle(...networked=true)         │
+│  4. CLIENT  [PATH A]       lib.setVehicleProperties(veh, props)  ←─ instant
+│  5. CLIENT → SERVER        TriggerServerEvent('vehicleSpawned')     │
+│  6. SERVER  [PATH B]       Validate against activeServices          │
+│                            Retry NetworkGetEntityFromNetworkId      │
+│                            Entity(veh).state:set(..., true)      ←─ broadcast
+│  7. ALL CLIENTS IN SCOPE   AddStateBagChangeHandler fires           │
+│                            Wait for entity to stream (≤5s)          │
+│                            lib.setVehicleProperties(veh, value)     │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
-**Add a new language:**
+### Path A — Owner-side direct apply
 
-1. Copy the `en` block inside `Config.Languages`
-2. Rename the key to your language code (e.g. `fr`)
-3. Translate all values — keep the keys!
-4. Set `Config.DefaultLanguage = 'fr'`
+The client that calls `CreateVehicle` **owns** the entity. We apply properties locally and immediately via `lib.setVehicleProperties()` before the driver NPC even gets in the seat. RAGE's standard vehicle mod replication takes care of broadcasting the mod state to nearby clients via the engine's normal entity sync.
 
-Currently supported:
+**Why this path matters:** the owner is the player who paid for and is watching the delivery. They need instant visual correctness regardless of any server round-trip latency. This path makes the apply independent of server timing.
 
-| Code | Language |
+### Path B — Server statebag broadcast
+
+The client also fires `rde_carservice:vehicleSpawned(netId, plate)` to the server. The server:
+
+1. Validates that `source` has an `activeServices[source]` entry of type `delivery` matching that plate — rejects forged or stale events.
+2. Retries `NetworkGetEntityFromNetworkId(netId)` up to 50 × 100 ms until the entity is registered server-side (v1.0.2: handles the network announcement race).
+3. Sets `Entity(vehicle).state:set('rde:vehicleProperties', properties, true)` — `broadcast = true` replicates to every client in scope, now and in the future.
+
+On every receiving client, `AddStateBagChangeHandler('rde:vehicleProperties', ...)` fires inside an isolated `CreateThread`, waits up to 5 s for the entity to be available locally (v1.0.2: handles the streaming race), then calls `lib.setVehicleProperties()`.
+
+**Why this path matters:** passengers who join after delivery, players who stream the vehicle in from a distance later, and anyone affected by a re-stream event all need the correct properties applied. Path A only reaches the owner directly; Path B reaches everyone else, plus re-applies to the owner as a safety net.
+
+### Why this is correct
+
+- **Server is always source of truth** — properties come from the DB, validated against `activeServices` before any statebag write
+- **`rde:vehicleProperties` is an RDE-owned key** — no collision with ox_lib internals, no chance of accidental overwrites by other resources
+- **Owner-side direct apply** removes the dependency on the server round-trip for first-paint visual correctness — and any other client that owns the vehicle later (handover, transfer) re-fires the statebag handler via the broadcast
+- **Both paths are idempotent** — calling `lib.setVehicleProperties` twice with the same data is a no-op; the property table is the same in memory both times
+- **Retry loops on both sides** — what v1.0.1 was missing and v1.0.2 added; FiveM statebags and networked entity registration are *both* asynchronous and require waiting
+
+---
+
+## 🎮 Usage
+
+### For Players
+
+**Requesting Delivery:**
+1. Type `/carservice`
+2. Select your vehicle from the garage list
+3. Confirm the payment
+4. Watch the driver arrive and hand over the keys
+
+**Requesting Pickup:**
+1. Approach your vehicle
+2. Right-click with ox_target — or open `/carservice` and select "Request Pickup"
+3. Confirm the payment
+4. Driver arrives, collects the vehicle, stores it in your garage
+
+---
+
+## 🔧 Developer API
+
+### Callbacks
+
+**Request Delivery**
+```lua
+local success, vehicleData = lib.callback.await('rde_carservice:requestDelivery', false, plate)
+if success then
+    -- vehicleData = { plate, model, properties }
+    print('Delivery initiated:', json.encode(vehicleData))
+end
+```
+
+**Request Pickup**
+```lua
+local netId = NetworkGetNetworkIdFromEntity(vehicle)
+local success, coords = lib.callback.await('rde_carservice:requestPickup', false, netId)
+```
+
+**Cancel Active Service**
+```lua
+TriggerServerEvent('rde_carservice:cancelService')
+```
+
+### Error Codes Returned by Callbacks
+
+| Code | Meaning |
 |---|---|
-| `en` | 🇬🇧 English |
-| `de` | 🇩🇪 Deutsch |
+| `player_not_found` | ox_core didn't return a valid player for the source |
+| `already_active` | This player already has an active delivery/pickup |
+| `invalid_plate` | Plate was nil or empty |
+| `vehicle_not_stored` | Vehicle exists but `stored IS NULL` — not in a garage (v1.0.2) |
+| `invalid_netid` | netId argument was nil/0 |
+| `vehicle_not_found` | netId did not resolve to an entity |
+| `no_plate` | Vehicle entity has no plate text |
+| `not_owner` | Vehicle owner does not match the requester's charId |
+| `insufficient_funds` | Player doesn't have enough money for the operation |
+| `account_error` | Money deduction failed at the DB layer |
+| `database_error` | Generic MySQL query failure |
 
 ---
 
-## 📸 Orbit Camera
+## 📋 Admin Commands
 
-During any tuning session the camera automatically starts orbiting the vehicle. No extra setup needed.
-
-| Setting | Default | Effect |
+| Command | Restricted | Description |
 |---|---|---|
-| `radius` | `7.0` | How far from the car (meters). Bigger = more overview. |
-| `height` | `1.8` | How high above the car center. Higher = more top-down. |
-| `fov` | `55.0` | Field of view. Lower = zoom, higher = wide-angle. |
-| `degreesPerSec` | `18.0` | One full rotation every ~20 seconds. Raise to spin faster. |
-| `startAngle` | `160.0` | Where the camera starts. 0 = rear, 90 = left, 180 = front. |
-| `enabled` | `true` | Set `false` to revert to default GTA gameplay camera. |
-
-The camera **never touches mouse input** — the ox_lib context menu is fully usable with the mouse while the camera orbits. The orbit stops automatically when the tuning menu closes.
+| `/carservice` | No | Opens the vehicle selection menu |
+| `/carservice_stats` | `group.admin` | Prints delivery / pickup / revenue stats to console (Debug mode only) |
 
 ---
 
-## 🔧 Mechanic Animation Sequence
+## 📊 Performance
 
-The mechanic NPC follows a strict 6-phase sequence with no teleports:
+```
+Resource: rde_carservice
+├─ Idle:    0.01 ms (no active services)
+├─ Active:  0.03–0.05 ms (delivery in progress)
+├─ Memory:  ~2.5 MB baseline
+├─ Threads: Dynamic — cleaned up after completion
+└─ Network: Minimal — statebag set once on spawn, no polling
+```
 
-| Phase | What happens |
-|---|---|
-| **1 – Walk** | Ped walks from spawn post to the driver-side hood position |
-| **2 – Face & freeze** | Ped turns to face the hood center, then freezes in place |
-| **3 – Hood open** | Hood opens with sound effect, 1.2s pause for the animation |
-| **4 – Repair** | Tool prop attached, repair animation loops, vehicle health restored progressively |
-| **5 – Step back & hood close** | Ped unfreezes, steps away from the vehicle, hood closes |
-| **6 – Walk home** | Ped walks back to spawn coordinates, turns to original heading, freezes again |
+Optimization features: async model loading, automatic entity cleanup, prepared SQL statements, smart thread management, event-driven statebag property application, idempotent dual-path sync.
 
 ---
 
-## 🐉 Nostr Logging
-
-rde_mechanic ships with **first-class [rde_nostr_log](https://github.com/RedDragonElite/rde_nostr_log) integration**.
-
-Every critical event is logged to the decentralized Nostr network — permanent, cryptographically signed, uncensorable. No Discord. No rate limits. No single point of failure.
-
-### Events logged automatically
-
-| Event | Toggle Key |
-|---|---|
-| Vehicle repaired | `logRepairs` |
-| Mod purchased | `logPurchases` |
-| Expensive purchase (above threshold) | `logPurchases` |
-| Mechanic NPC created by admin | `logAdminCreate` |
-| Mechanic NPC deleted by admin | `logAdminDelete` |
-
-### Disable Nostr completely
-
-```lua
-Config.NostrLog.enabled = false
-```
-
-Zero overhead. Zero side effects. The system runs normally without it.
-
----
-
-## 📡 Events & Callbacks
-
-### Server Events (triggered from client)
-
-```lua
--- Request a repair from a mechanic
-TriggerServerEvent('rde_mechanic:requestRepair', vehicleNetId, mechanicId, clientPrice, vClass)
-
--- Signal repair phase change (walking / repairing / returning / idle)
-TriggerServerEvent('rde_mechanic:repairPhase', mechanicId, phase, data)
-
--- Confirm repair complete
-TriggerServerEvent('rde_mechanic:repairComplete', vehicleNetId)
-
--- Purchase a vehicle mod
-TriggerServerEvent('rde_mechanic:purchaseMod', netId, modType, modValue, price, wheelType, isToggle, vClass)
-
--- Purchase a color change
-TriggerServerEvent('rde_mechanic:purchaseColor', netId, colorType, colorId, price, vClass)
-
--- Purchase neon
-TriggerServerEvent('rde_mechanic:purchaseNeon', netId, r, g, b, price, vClass)
-
--- Toggle an extra
-TriggerServerEvent('rde_mechanic:purchaseExtra', netId, extraId, extraState, price, vClass)
-
--- Save vehicle properties after session
-TriggerServerEvent('rde_mechanic:saveVehicleProperties', vehicleNetId, properties)
-
--- Admin: create mechanic NPC
-TriggerServerEvent('rde_mechanic:createMechanic', coords, heading)
-
--- Admin: delete mechanic NPC
-TriggerServerEvent('rde_mechanic:deleteMechanic', id)
-
--- Sync preview state to other clients
-TriggerServerEvent('rde_mechanic:setPreviewMod', vehicleNetId, previewData)
-```
-
-### lib.callback
-
-```lua
--- Check if player is admin (returns bool)
-lib.callback('rde_mechanic:isAdmin', false, function(result) end)
-```
-
-### StateBag Keys
-
-```lua
--- Vehicle currently being repaired (playerId or false)
-Entity(vehicle).state['rde:repairing']
-
--- Vehicle currently being tuned (playerId or false)
-Entity(vehicle).state['rde:tuner']
-
--- Player is busy (bool)
-Player(source).state['rde:busy']
-
--- Active mod preview data (table or false)
-Entity(vehicle).state['rde:preview']
-
--- GlobalState mechanic repair phase sync
-GlobalState['rde:mech_status']
-```
-
----
-
-## 🗂 Folder Structure
+## 📁 File Structure
 
 ```
-rde_mechanic/
-├── fxmanifest.lua       ← Resource manifest, dependencies
-├── config.lua           ← Full configuration (camera, prices, mods, behavior, locales)
-├── client.lua           ← All client logic: ped spawning, camera, preview, menus
-├── server.lua           ← All server logic: auth, purchases, repair validation, Nostr
-└── README.md
+rde_carservice/
+├── fxmanifest.lua      ← Resource manifest (requires build 7290)
+├── config.lua          ← All configuration
+├── client.lua          ← Spawn logic, driver AI, direct apply, statebag handler, UI
+├── server.lua          ← Callbacks, DB, money, statebag write with retry, security
+├── phone_app.lua       ← Phone app integration (optional)
+├── LICENSE             ← RDE Black Flag Source License v6.66
+└── README.md           ← You are here
 ```
-
----
-
-## 🔧 Debug
-
-Enable with `Config.Debug.enabled = true` in `config.lua`, then check your server console and F8 client console for `[RDE][HH:MM:SS]` prefixed output.
-
-| What to check | Where |
-|---|---|
-| Resource not starting | `luac5.4 -p client.lua` and `luac5.4 -p server.lua` in bash |
-| Mechanic not spawning | Server console — look for `[RDE]` spawn/DB errors |
-| Purchase rejected | Server console — price validation logs the mismatch |
-| Camera not working | `Config.TuningCamera.enabled` — confirm it's `true` |
-| Mod preview not reverting | Check `Entity(veh).state['rde:preview']` in client console |
-
----
-
-## 🛡 Security
-
-- All purchases **validated server-side** — mod type, price, vehicle ownership
-- Rate limiting: `Config.Security.maxPurchasesPerMinute = 15`
-- Repair cooldown: `Config.Security.repairCooldown = 5` seconds
-- Admin actions gated by ACE permission **and** ox_core group check
-- StateBags used for sync — no polling, no `TriggerClientEvent` spam
-- Nostr logs are cryptographically signed — tamper-proof by design
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Resource fails to start
+**Vehicle properties not applying?**
+Enable `Config.Debug = true` and check both consoles. In v1.0.2 you should see this sequence:
+- Client console: `🔧 Direct apply on owner: true` (Path A succeeded — owner sees mods immediately)
+- Server console: `📡 Statebag rde:vehicleProperties set for netId N` (Path B succeeded — broadcast sent)
+- Client console (and other clients in scope): `✅ Properties applied via statebag for entity N` (Path B applied)
 
-Run `luac5.4 -p client.lua` and `luac5.4 -p server.lua` in bash. Any Lua syntax error will print the exact line. Fix it, restart.
+If Path A log says `true` but the visual is still default → check that your `data` column in the `vehicles` table actually contains valid properties (turn debug on server-side too — the `loadVehicleProperties` function will log the decoded keys).
 
-### Mechanic NPC doesn't spawn
+If the server logs `entity never appeared for netId N after 5s` → your server is under extreme load or OneSync isn't behaving; this is the v1.0.2 timeout safeguard. The direct apply (Path A) will still have succeeded for the owner.
 
-1. Enable debug and check server console for `[RDE]` DB errors
-2. Confirm `oxmysql` is running and connected
-3. Make sure the `mechanic_locations` table exists (auto-created on first start)
-4. Walk within `Config.Distances.interactionRange` (default 8.0m) of the target zone
+**Driver not spawning?**
+Check console for model loading errors. Ensure all configured ped models are valid GTA V model names.
 
-### Mod preview doesn't revert on cancel
+**Money not deducting / deducting twice?**
+Verify the `character_inventory` table structure and that the money item format matches: `{"name":"money","count":5000}`. In v1.0.2, money is only deducted *after* the `stored IS NOT NULL` check passes — players cannot be charged for vehicles not actually in a garage.
 
-The preview state lives in `Entity(vehicle).state['rde:preview']`. If the cancel callback fires but the mod stays:
-1. Confirm the vehicle entity is still valid (`DoesEntityExist`)
-2. Check client console for `[RDE] RestoreFromCapture` output
-3. Open an issue with F8 logs
+**Service timing out early?**
+Increase `Config.Timing.serviceTimeout`. Check server performance and that the driver can pathfind to the player location.
 
-### Camera orbits but looks wrong (too high/low/far)
+**`No such export` errors?**
+Make sure `rde_carservice` starts **after** `ox_lib`, `ox_core`, and `oxmysql` in `server.cfg`.
 
-Tune `Config.TuningCamera` in `config.lua`:
-- Too far away → lower `radius`
-- Looking at the sky → lower `height`
-- Too zoomed in → raise `fov`
-- Spinning too fast → lower `degreesPerSec`
-
-### Nostr logger not connecting
-
-```
-[RDE | Mechanic | Nostr] ✗ Resource "rde_nostr_log" not found
-```
-
-Install [rde_nostr_log](https://github.com/RedDragonElite/rde_nostr_log) and ensure it starts **before** rde_mechanic. The mechanic system continues to function normally without it.
-
-### Purchase rejected with "Not enough money"
-
-ox_inventory is used for money checks. Confirm:
-1. `ox_inventory` is running and started before `rde_mechanic`
-2. The player has `money` item in their inventory
-3. `Config.Security.validatePricesServerSide = true` — client-sent price is validated against server-side calculation
+**`Config.Debug = false` isn't disabling debug output?**
+Fixed in v1.0.2. Update to the latest release.
 
 ---
 
-## 📚 Tech Stack
+## 🗺️ Roadmap
 
-```
-ox_core        → Player & group management, admin auth
-ox_lib         → UI, context menus, progress bars, notifications, callbacks
-ox_inventory   → Inventory & money management
-ox_target      → Interaction zones on mechanic NPCs
-oxmysql        → Async database (mechanic locations persist)
-StateBags      → Realtime vehicle & player state sync across all clients
-rde_nostr_log  → Decentralized logging (optional)
-```
+### Planned for v2.0
 
----
+- [ ] Multiple garage support — store vehicles in different locations
+- [ ] Express delivery — pay extra for instant spawn
+- [ ] Real-time GPS tracking of the delivery driver
+- [ ] Custom driver uniforms per server
+- [ ] Delivery zone restrictions
+- [ ] Helicopter delivery for remote locations
+- [ ] Damage compensation if driver crashes
+- [ ] VIP subscription pass
 
-## 🤝 Contributing
-
-PRs are always welcome.
-
-1. **Fork** the repository
-2. **Create** a branch: `git checkout -b feature/your-feature`
-3. **Test** on a live server before submitting
-4. **Commit**: `git commit -m 'feat: your feature description'`
-5. **Push**: `git push origin feature/your-feature`
-6. **Open** a Pull Request with a clear description
-
-**Guidelines:**
-
-- ✅ Keep the RDE header in all files
-- ✅ Follow existing code style — ox_core, ox_lib, StateBags
-- ✅ Run `luac5.4 -p` on every modified `.lua` file before pushing
-- ✅ Test on a live server before PR — don't ship syntax errors
-- ❌ No telemetry, no paywalls, no ESX/QBCore
-- ❌ Don't downgrade security — server-side validation stays
-- ❌ Don't hardcode user-facing strings — use `L('key')` and add to all locale blocks in `config.lua`
+Have a feature request? [Open a Discussion](https://github.com/RedDragonElite/rde_carservice/discussions).
 
 ---
 
 ## 📜 License
 
-**RDE Black Flag Source License v6.66**
-
-```
-###################################################################################
-#                                                                                 #
-#      .:: RED DRAGON ELITE (RDE)  -  BLACK FLAG SOURCE LICENSE v6.66 ::.         #
-#                                                                                 #
-#   PROJECT:    RDE_MECHANIC (NEXT-GEN VEHICLE MECHANIC & TUNER FOR FIVEM OX_CORE)#
-#   ARCHITECT:  .:: RDE ⧌ Shin [△ ᛋᛅᚱᛒᛅᚾᛁᛋ ᛒᛁᛞᛅ ▽] ::. | https://rd-elite.com     #
-#   ORIGIN:     https://github.com/RedDragonElite                                 #
-#                                                                                 #
-#   WARNING: THIS CODE IS PROTECTED BY DIGITAL VOODOO AND PURE HATRED FOR LEAKERS #
-#                                                                                 #
-#   [ THE RULES OF THE GAME ]                                                     #
-#                                                                                 #
-#   1. // THE "FUCK GREED" PROTOCOL (FREE USE)                                    #
-#      You are free to use, edit, and abuse this code on your server.             #
-#      Learn from it. Break it. Fix it. That is the hacker way.                   #
-#      Cost: 0.00€. If you paid for this, you got scammed by a rat.               #
-#                                                                                 #
-#   2. // THE TEBEX KILL SWITCH (COMMERCIAL SUICIDE)                              #
-#      Listen closely, you parasites:                                             #
-#      If I find this script on any paid store, Patreon, or "Premium Pack":       #
-#      > I will DMCA your store into oblivion.                                    #
-#      > I will publicly shame your community on Nostr. Permanently.              #
-#      > I hope every mod menu opens to the wrong vehicle forever.                #
-#      SELLING FREE WORK IS THEFT. AND I AM THE JUDGE.                            #
-#                                                                                 #
-#   3. // THE CREDIT OATH                                                         #
-#      Keep this header. If you remove my name, you admit you have no skill.      #
-#      You can add "Edited by [YourName]", but never erase the original creator.  #
-#      Don't be a skid. Respect the architecture.                                 #
-#                                                                                 #
-#   4. // THE CURSE OF THE COPY-PASTE                                             #
-#      This code implements real StateBag sync, server-side price validation,     #
-#      live preview with full revert, and animated ped sequences. If you          #
-#      copy-paste without understanding, you WILL break something expensive.      #
-#      Don't come crying to my DMs. RTFM.                                         #
-#                                                                                 #
-#   --------------------------------------------------------------------------    #
-#   "We build the future on the graves of paid resources."                        #
-#   "REJECT MODERN MEDIOCRITY. EMBRACE RDE SUPERIORITY."                          #
-#   --------------------------------------------------------------------------    #
-###################################################################################
-```
+**RDE Black Flag Source License v6.66** — see [LICENSE](./LICENSE)
 
 **TL;DR:**
-
-- ✅ **Free forever** — use it, edit it, learn from it
-- ✅ **Keep the header** — credit where it's due
-- ❌ **Don't sell it** — commercial use = instant DMCA + public shaming on Nostr
-- ❌ **Don't be a skid** — copy-paste without reading will break things
-
----
-
-## ⚡ Related Projects
-
-| Resource | Description |
-|---|---|
-| [rde_aipd](https://github.com/RedDragonElite/rde_aipd) | Ultimate AI Police System — StateBag-synced, Nostr-logged |
-| [rde_nostr_log](https://github.com/RedDragonElite/rde_nostr_log) | Decentralized FiveM logging via Nostr — replace Discord forever |
-| [awesome-ox-rde](https://github.com/RedDragonElite/awesome-ox-rde) | Curated list of the best ox_core resources |
+- ✅ Free to use, edit, and learn from — forever
+- ✅ Keep the header / credit the creator
+- ❌ Do NOT sell this on Tebex, Patreon, or in any paid pack
+- ❌ Do NOT be a skid
 
 ---
 
-## 🌐 Community & Support
+## 🌐 Community & Links
 
 | | |
 |---|---|
-| 🌍 **Website** | [rd-elite.com](https://rd-elite.com) |
-| 🔭 **Nostr Terminal** | [rd-elite.com/Files/NOSTR/Terminal](https://rd-elite.com/Files/NOSTR/Terminal/) |
-| 🐙 **GitHub** | [github.com/RedDragonElite](https://github.com/RedDragonElite) |
-| 🟣 **Nostr** | `npub1wr4e24zn6zzjqx8kvnelfvktf0pu6l2gx4gvw06zead2eqyn23sq9tsd94` |
-
-**Before opening an issue:**
-
-- ✅ Read this README fully
-- ✅ Check the [Troubleshooting](#-troubleshooting) section
-- ✅ Include your server console output and F8 client logs
-- ❌ Don't open issues without logs — we can't help without them
+| 🐙 GitHub | [github.com/RedDragonElite](https://github.com/RedDragonElite) |
+| 🌍 Website | [rd-elite.com](https://rd-elite.com) |
+| 🔵 Nostr | [SerpentsByte](https://nostr.band/npub1wr4e24zn6zzjqx8kvnelfvktf0pu6l2gx4gvw06zead2eqyn23sq9tsd94) |
+| ⚡ rde_nostr_log | [Decentralized Logging](https://github.com/RedDragonElite/rde_nostr_log) |
+| 💀 RDE AIMD | [rde_aimd](https://github.com/RedDragonElite/rde_aimd) |
+| 📖 OX Standards | [rde_ox_standards](https://github.com/RedDragonElite/rde_ox_standards) |
 
 ---
 
-**Made with 🔥 and zero tolerance for paid garages by [Red Dragon Elite](https://rd-elite.com)**
-
-*The future is ours. We are already inside.*
-
-**REJECT MODERN MEDIOCRITY. EMBRACE RDE SUPERIORITY.**
-
-**RDE FOREVER. SYSTEM FAILURE. ⚡777⚡**
-
-[![Website](https://img.shields.io/badge/Website-Visit-red?style=for-the-badge&logo=google-chrome)](https://rd-elite.com)
-[![Nostr](https://img.shields.io/badge/Nostr-Follow-purple?style=for-the-badge&logo=rss)](https://primal.net/p/npub1wr4e24zn6zzjqx8kvnelfvktf0pu6l2gx4gvw06zead2eqyn23sq9tsd94)
-[![Terminal](https://img.shields.io/badge/Terminal-Live-green?style=for-the-badge&logo=gnome-terminal)](https://rd-elite.com/Files/NOSTR/)
+> *"We build the future on the graves of paid resources."*
+> **REJECT MODERN MEDIOCRITY. EMBRACE RDE SUPERIORITY.**
+> 🐍🔥🖤 **RDE FOREVER. SYSTEM FAILURE.** ⚡777⚡

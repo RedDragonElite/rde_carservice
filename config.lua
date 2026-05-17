@@ -1,6 +1,6 @@
 --[[
     ╔═══════════════════════════════════════════════════════════════════════════╗
-    ║  🚘 RDE CAR SERVICE - CONFIGURATION v1.0.1                                ║
+    ║  🚘 RDE CAR SERVICE - CONFIGURATION v1.0                                  ║
     ╚═══════════════════════════════════════════════════════════════════════════╝
 ]]
 
@@ -132,15 +132,15 @@ Config.PickupCost = 500    -- Cost to pickup and store a vehicle
 -- 🚗 DRIVER & VEHICLE SETTINGS
 -- ═══════════════════════════════════════════════════════════════════════════
 Config.DriverModels = {
-    `s_m_m_valet_01`,        -- Valet (premium look)
-    `s_m_m_movprem_01`,      -- Movie Premium
-    `s_m_m_pilot_01`,        -- Pilot (professional)
-    `s_m_y_dealer_01`,       -- Dealer
-    `s_m_m_autoshop_01`,     -- Auto Shop Worker 1
-    `s_m_m_autoshop_02`,     -- Auto Shop Worker 2
-    `a_m_m_business_01`,     -- Business Man
-    `a_m_y_business_01`,     -- Young Business
-    `a_m_y_vinewood_01`,     -- Vinewood Guy
+    's_m_m_valet_01',        -- Valet (premium look)
+    's_m_m_movprem_01',      -- Movie Premium
+    's_m_m_pilot_01',        -- Pilot (professional)
+    's_m_y_dealer_01',       -- Dealer
+    's_m_m_autoshop_01',     -- Auto Shop Worker 1
+    's_m_m_autoshop_02',     -- Auto Shop Worker 2
+    'a_m_m_business_01',     -- Business Man
+    'a_m_y_business_01',     -- Young Business
+    'a_m_y_vinewood_01',     -- Vinewood Guy
 }
 
 Config.SpawnDistance = 200.0      -- Distance from player to spawn vehicle (meters)
