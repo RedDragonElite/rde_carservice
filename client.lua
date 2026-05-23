@@ -581,7 +581,7 @@ local function deliverVehicle(vehicleData)
     if State.activeDelivery or State.activePickup then
         lib.notify({
             title = 'Car Service',
-            description = 'Service bereits aktiv',
+            description = L('already_active'),
             type = 'error',
             icon = 'ban',
             iconColor = '#ef4444'
@@ -601,7 +601,7 @@ local function deliverVehicle(vehicleData)
     if not vehicleModel then
         lib.notify({
             title = 'Car Service',
-            description = 'Ungültiges Fahrzeugmodell',
+            description = L('invalid_vehicle_model'),
             type = 'error',
             icon = 'triangle-exclamation'
         })
@@ -614,7 +614,7 @@ local function deliverVehicle(vehicleData)
     if Config.Effects.enableProgressBars then
         if lib.progressCircle({
             duration = 2000,
-            label = 'Rufe Service an...',
+            label = L('calling_service'),
             position = 'bottom',
             useWhileDead = false,
             canCancel = false,
@@ -633,7 +633,7 @@ local function deliverVehicle(vehicleData)
     if not lib.requestModel(modelForRequest, 15000) then
         lib.notify({
             title = 'Car Service',
-            description = 'Fahrzeug konnte nicht geladen werden',
+            description = L('vehicle_model_load_failed'),
             type = 'error',
             icon = 'xmark'
         })
@@ -653,7 +653,7 @@ local function deliverVehicle(vehicleData)
     if not DoesEntityExist(State.driverVehicle) then
         lib.notify({
             title = 'Car Service',
-            description = 'Fahrzeug konnte nicht gespawnt werden',
+            description = L('vehicle_spawn_failed'),
             type = 'error',
             icon = 'xmark'
         })
@@ -723,7 +723,7 @@ local function deliverVehicle(vehicleData)
         DeleteEntity(State.driverVehicle)
         lib.notify({
             title = 'Car Service',
-            description = 'Fahrer konnte nicht gespawnt werden',
+            description = L('driver_spawn_failed'),
             type = 'error',
             icon = 'user-xmark'
         })
@@ -735,14 +735,14 @@ local function deliverVehicle(vehicleData)
     TaskWarpPedIntoVehicle(State.driverPed, State.driverVehicle, -1)
     Wait(500)
 
-    State.driverBlip = createEnhancedBlip(spawnCoords, "🚗 Fahrzeug-Lieferung", 'delivery')
+    State.driverBlip = createEnhancedBlip(spawnCoords, L('driver_blip_name'), 'delivery')
 
     local distance = #(playerCoords - spawnCoords)
     local eta = math.ceil(distance / Config.DrivingSpeed * 2.5)
 
     lib.notify({
         title = 'Car Service',
-        description = ("Fahrer kommt in ~%d Sekunden an"):format(eta),
+        description = L('driver_arriving_seconds', eta),
         type = 'info',
         icon = 'car',
         iconColor = '#3b82f6',
@@ -780,7 +780,7 @@ local function deliverVehicle(vehicleData)
                 cleanupDelivery()
                 lib.notify({
                     title = 'Car Service',
-                    description = 'Service abgebrochen',
+                    description = L('service_cancelled'),
                     type = 'error',
                     icon = 'ban'
                 })
@@ -799,7 +799,7 @@ local function deliverVehicle(vehicleData)
             if dist < 50.0 and not notified then
                 lib.notify({
                     title = 'Car Service',
-                    description = 'Fahrer ist gleich da!',
+                    description = L('driver_almost_here'),
                     type = 'success',
                     icon = 'circle-check',
                     iconColor = '#22c55e'
@@ -833,7 +833,7 @@ local function deliverVehicle(vehicleData)
 
                 lib.notify({
                     title = 'Car Service',
-                    description = '✅ Fahrzeug erfolgreich geliefert!',
+                    description = L('vehicle_delivered'),
                     type = 'success',
                     icon = 'circle-check',
                     iconColor = '#22c55e'
@@ -870,7 +870,7 @@ local function pickupVehicle(vehicleCoords, targetVehicle)
     if State.activeDelivery or State.activePickup then
         lib.notify({
             title = 'Car Service',
-            description = 'Service bereits aktiv',
+            description = L('already_active'),
             type = 'error',
             icon = 'ban'
         })
@@ -888,7 +888,7 @@ local function pickupVehicle(vehicleCoords, targetVehicle)
     if Config.Effects.enableProgressBars then
         if lib.progressCircle({
             duration = 2000,
-            label = 'Rufe Abholung an...',
+            label = L('calling_pickup'),
             position = 'bottom',
             useWhileDead = false,
             canCancel = false,
@@ -908,7 +908,7 @@ local function pickupVehicle(vehicleCoords, targetVehicle)
     if not State.driverPed then
         lib.notify({
             title = 'Car Service',
-            description = 'Fahrer konnte nicht gespawnt werden',
+            description = L('driver_spawn_failed'),
             type = 'error',
             icon = 'user-xmark'
         })
@@ -917,11 +917,11 @@ local function pickupVehicle(vehicleCoords, targetVehicle)
         return
     end
 
-    State.driverBlip = createEnhancedBlip(spawnCoords, "📞 Abhol-Fahrer", 'pickup')
+    State.driverBlip = createEnhancedBlip(spawnCoords, L('driver_blip_name'), 'pickup')
 
     lib.notify({
         title = 'Car Service',
-        description = 'Fahrer ist unterwegs zur Abholung',
+        description = L('driver_on_way_pickup'),
         type = 'info',
         icon = 'truck-pickup',
         iconColor = '#10b981',
@@ -955,7 +955,7 @@ local function pickupVehicle(vehicleCoords, targetVehicle)
                 cleanupPickup()
                 lib.notify({
                     title = 'Car Service',
-                    description = 'Service abgebrochen',
+                    description = L('service_cancelled'),
                     type = 'error',
                     icon = 'ban'
                 })
@@ -974,7 +974,7 @@ local function pickupVehicle(vehicleCoords, targetVehicle)
             if dist < 50.0 and not notified then
                 lib.notify({
                     title = 'Car Service',
-                    description = 'Fahrer ist gleich da!',
+                    description = L('driver_almost_here'),
                     type = 'success',
                     icon = 'circle-check'
                 })
@@ -1033,7 +1033,7 @@ local function pickupVehicle(vehicleCoords, targetVehicle)
 
                         lib.notify({
                             title = 'Car Service',
-                            description = '💾 Fahrzeug in Garage gelagert',
+                            description = L('vehicle_stored'),
                             type = 'success',
                             icon = 'circle-check',
                             iconColor = '#22c55e'
@@ -1058,7 +1058,7 @@ local function pickupVehicle(vehicleCoords, targetVehicle)
                     else
                         lib.notify({
                             title = 'Car Service',
-                            description = 'Fahrer konnte nicht einsteigen',
+                            description = L('driver_enter_failed'),
                             type = 'error',
                             icon = 'xmark'
                         })
@@ -1067,7 +1067,7 @@ local function pickupVehicle(vehicleCoords, targetVehicle)
                 else
                     lib.notify({
                         title = 'Car Service',
-                        description = 'Fahrzeug nicht gefunden',
+                        description = L('no_vehicle_found'),
                         type = 'error',
                         icon = 'car-burst'
                     })
@@ -1088,7 +1088,7 @@ local function openCarServiceMenu()
     if State.activeDelivery or State.activePickup then
         lib.notify({
             title = 'Car Service',
-            description = 'Service bereits aktiv',
+            description = L('already_active'),
             type = 'error',
             icon = 'ban'
         })
@@ -1100,7 +1100,7 @@ local function openCarServiceMenu()
     if not vehicles or #vehicles == 0 then
         lib.notify({
             title = 'Car Service',
-            description = 'Keine Fahrzeuge in der Garage',
+            description = L('no_vehicles_in_garage'),
             type = 'error',
             icon = 'garage'
         })
@@ -1126,15 +1126,12 @@ local function openCarServiceMenu()
 
         table.insert(options, {
             title = ('%s %s'):format(icon, displayName:upper()),
-            description = ('📋 Kennzeichen: %s | 💵 Kosten: $%d'):format(
-                vehicle.plate, 
-                Config.DeliveryCost
-            ),
+            description = L('plate_cost_desc', vehicle.plate, Config.DeliveryCost),
             icon = 'car-side',
             iconColor = '#3b82f6',
             metadata = {
-                {label = 'Kennzeichen', value = vehicle.plate},
-                {label = 'Lieferkosten', value = ('$%d'):format(Config.DeliveryCost)}
+                {label = L('plate'), value = vehicle.plate},
+                {label = L('delivery_cost'), value = ('$%d'):format(Config.DeliveryCost)}
             },
             onSelect = function()
                 local success, result = lib.callback.await('rde_carservice:requestDelivery', false, vehicle.plate)
@@ -1143,7 +1140,7 @@ local function openCarServiceMenu()
                     playSound('success')
                     lib.notify({
                         title = 'Car Service',
-                        description = 'Service angefordert',
+                        description = L('service_requested_short'),
                         type = 'success',
                         icon = 'circle-check'
                     })
@@ -1151,18 +1148,18 @@ local function openCarServiceMenu()
                 else
                     playSound('error')
                     local errorMessages = {
-                        player_not_found = 'Spieler nicht gefunden',
-                        already_active = 'Service bereits aktiv',
-                        invalid_plate = 'Ungültiges Kennzeichen',
-                        no_vehicle_found = 'Fahrzeug nicht gefunden',
-                        vehicle_not_stored = 'Fahrzeug nicht in Garage',
-                        insufficient_funds = ('Nicht genug Geld ($%d benötigt)'):format(Config.DeliveryCost),
-                        account_error = 'Zahlungsfehler'
+                        player_not_found = L('player_not_found'),
+                        already_active = L('already_active'),
+                        invalid_plate = L('invalid_plate'),
+                        no_vehicle_found = L('no_vehicle_found'),
+                        vehicle_not_stored = L('vehicle_not_stored'),
+                        insufficient_funds = L('insufficient_funds_short', Config.DeliveryCost),
+                        account_error = L('account_error')
                     }
 
                     lib.notify({
                         title = 'Car Service',
-                        description = errorMessages[result] or 'Fehler aufgetreten',
+                        description = errorMessages[result] or L('error'),
                         type = 'error',
                         icon = 'triangle-exclamation'
                     })
@@ -1172,12 +1169,12 @@ local function openCarServiceMenu()
     end
 
     table.insert(options, {
-        title = '📞 Abholung anfordern',
-        description = ('💾 Fahrzeug in Garage lagern für $%d'):format(Config.PickupCost),
+        title = L('request_pickup_title'),
+        description = L('request_pickup_desc', Config.PickupCost),
         icon = 'truck-pickup',
         iconColor = '#10b981',
         metadata = {
-            {label = 'Abhol-Kosten', value = ('$%d'):format(Config.PickupCost)}
+            {label = L('pickup_cost'), value = ('$%d'):format(Config.PickupCost)}
         },
         onSelect = function()
             local playerPed = PlayerPedId()
@@ -1191,7 +1188,7 @@ local function openCarServiceMenu()
                 playSound('error')
                 lib.notify({
                     title = 'Car Service',
-                    description = 'Kein Fahrzeug in der Nähe',
+                    description = L('no_vehicle_nearby'),
                     type = 'error',
                     icon = 'car-burst'
                 })
@@ -1205,7 +1202,7 @@ local function openCarServiceMenu()
                 playSound('success')
                 lib.notify({
                     title = 'Car Service',
-                    description = 'Abholung angefordert',
+                    description = L('pickup_requested_short'),
                     type = 'success',
                     icon = 'circle-check'
                 })
@@ -1213,19 +1210,19 @@ local function openCarServiceMenu()
             else
                 playSound('error')
                 local errorMessages = {
-                    player_not_found = 'Spieler nicht gefunden',
-                    already_active = 'Service bereits aktiv',
-                    invalid_netid = 'Ungültiges Fahrzeug',
-                    vehicle_not_found = 'Fahrzeug nicht gefunden',
-                    no_plate = 'Kein Kennzeichen gefunden',
-                    not_owner = 'Du bist nicht der Besitzer',
-                    insufficient_funds = ('Nicht genug Geld ($%d benötigt)'):format(Config.PickupCost),
-                    account_error = 'Zahlungsfehler'
+                    player_not_found = L('player_not_found'),
+                    already_active = L('already_active'),
+                    invalid_netid = L('invalid_netid'),
+                    vehicle_not_found = L('no_vehicle_found'),
+                    no_plate = L('no_vehicle_found'),
+                    not_owner = L('not_owner'),
+                    insufficient_funds = L('insufficient_funds_short', Config.PickupCost),
+                    account_error = L('account_error')
                 }
 
                 lib.notify({
                     title = 'Car Service',
-                    description = errorMessages[result] or 'Fehler aufgetreten',
+                    description = errorMessages[result] or L('error'),
                     type = 'error',
                     icon = 'triangle-exclamation'
                 })
@@ -1235,7 +1232,7 @@ local function openCarServiceMenu()
 
     lib.registerContext({
         id = 'carservice_menu',
-        title = '🚘 Car Service Menü',
+        title = L('menu_title_short'),
         options = options,
         menu = nil
     })
@@ -1258,7 +1255,7 @@ CreateThread(function()
             {
                 name = 'carservice_pickup',
                 icon = 'fas fa-phone-volume',
-                label = ('📞 Abholung anfordern ($%d)'):format(Config.PickupCost),
+                label = L('request_pickup_title') .. (' ($%d)'):format(Config.PickupCost),
                 distance = 3.0,
                 canInteract = function(entity, distance, coords, name, bone)
                     return not (State.activeDelivery or State.activePickup)
@@ -1267,7 +1264,7 @@ CreateThread(function()
                     if not data.entity or not DoesEntityExist(data.entity) then
                         lib.notify({
                             title = 'Car Service',
-                            description = 'Fahrzeug nicht gefunden',
+                            description = L('no_vehicle_found'),
                             type = 'error',
                             icon = 'car-burst'
                         })
@@ -1281,7 +1278,7 @@ CreateThread(function()
                         playSound('success')
                         lib.notify({
                             title = 'Car Service',
-                            description = 'Abholung angefordert',
+                            description = L('pickup_requested_short'),
                             type = 'success',
                             icon = 'circle-check'
                         })
@@ -1289,19 +1286,19 @@ CreateThread(function()
                     else
                         playSound('error')
                         local errorMessages = {
-                            player_not_found = 'Spieler nicht gefunden',
-                            already_active = 'Service bereits aktiv',
-                            invalid_netid = 'Ungültiges Fahrzeug',
-                            vehicle_not_found = 'Fahrzeug nicht gefunden',
-                            no_plate = 'Kein Kennzeichen gefunden',
-                            not_owner = 'Du bist nicht der Besitzer',
-                            insufficient_funds = ('Nicht genug Geld ($%d benötigt)'):format(Config.PickupCost),
-                            account_error = 'Zahlungsfehler'
+                            player_not_found = L('player_not_found'),
+                            already_active = L('already_active'),
+                            invalid_netid = L('invalid_netid'),
+                            vehicle_not_found = L('no_vehicle_found'),
+                            no_plate = L('no_vehicle_found'),
+                            not_owner = L('not_owner'),
+                            insufficient_funds = L('insufficient_funds_short', Config.PickupCost),
+                            account_error = L('account_error')
                         }
 
                         lib.notify({
                             title = 'Car Service',
-                            description = errorMessages[result] or 'Fehler aufgetreten',
+                            description = errorMessages[result] or L('error'),
                             type = 'error',
                             icon = 'triangle-exclamation'
                         })
