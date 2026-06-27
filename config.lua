@@ -90,6 +90,8 @@ Config.Translations = {
         ['invalid_netid'] = 'Invalid vehicle',
         ['not_owner_short'] = 'You are not the owner',
         ['insufficient_funds_short'] = 'Insufficient funds ($%d required)',
+        -- 🔗 rde_parking integration
+        ['vehicle_is_parked'] = '🅿️ Vehicle is parked nearby — retrieve it from the parking spot first',
     },
     ['de'] = {
         -- Service Messages
@@ -169,7 +171,20 @@ Config.Translations = {
         ['invalid_netid'] = 'Ungültiges Fahrzeug',
         ['not_owner_short'] = 'Du bist nicht der Besitzer',
         ['insufficient_funds_short'] = 'Nicht genug Geld ($%d benötigt)',
+        -- 🔗 rde_parking integration
+        ['vehicle_is_parked'] = '🅿️ Fahrzeug ist in der Nähe geparkt — hole es erst vom Parkplatz',
     }
+}
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- 💬 CHAT-COMMAND EINSTELLUNGEN
+-- ═══════════════════════════════════════════════════════════════════════════
+-- Standardmäßig ist der Chat-Command DEAKTIVIERT.
+-- Der Service wird über die NPWD Phone-App geöffnet.
+-- Setze enabled = true wenn du /carservice im Chat aktivieren willst.
+Config.Command = {
+    enabled = true,              -- /carservice Chat-Command (Standard: AUS)
+    name    = 'carservice',       -- Command-Name (ohne /)
 }
 
 -- ═══════════════════════════════════════════════════════════════════════════

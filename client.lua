@@ -1154,7 +1154,9 @@ local function openCarServiceMenu()
                         no_vehicle_found = L('no_vehicle_found'),
                         vehicle_not_stored = L('vehicle_not_stored'),
                         insufficient_funds = L('insufficient_funds_short', Config.DeliveryCost),
-                        account_error = L('account_error')
+                        account_error = L('account_error'),
+                        -- 🔗 rde_parking: vehicle is a live parked entity in the world
+                        vehicle_is_parked = L('vehicle_is_parked'),
                     }
 
                     lib.notify({
@@ -1244,9 +1246,14 @@ end
 -- 🎮 COMMANDS & INTERACTIONS
 -- ═══════════════════════════════════════════════════════════════════════════
 
-RegisterCommand('carservice', function()
-    openCarServiceMenu()
-end, false)
+-- Conditional command registration — toggle via Config.Command.enabled in config.lua
+if Config.Command and Config.Command.enabled then
+    local cmdName = Config.Command.name or 'carservice'
+    RegisterCommand(cmdName, function()
+        openCarServiceMenu()
+    end, false)
+    TriggerEvent('chat:addSuggestion', '/' .. cmdName, 'Car Service Menü öffnen')
+end
 
 -- ox_target integration
 CreateThread(function()
@@ -1398,6 +1405,114 @@ AddStateBagChangeHandler('rde:vehicleProperties', nil, function(bagName, _, valu
             debugLog(("⚠️ lib.setVehicleProperties failed for entity %d: %s"):format(vehicle, tostring(err)))
         end
     end)
+end)
+
+
+-- ═══════════════════════════════════════════════════════════════════════════
+-- 📱 PHONE APP NUI CALLBACKS
+--  Cross-resource NUI calls von der NPWD Car Service Phone-App.
+--  Antworten müssen JSON sein (cb(table) → wird serialisiert).
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Globale State-Accessor-Funktion damit phone_app.lua auf State zugreifen kann.
+function CSGetActiveService()
+    return {
+        activeDelivery = State.activeDelivery ~= nil,
+        activePickup   = State.activePickup ~= nil,
+    }
+end
+
+-- Status + Kosten für die Phone-App
+RegisterNUICallback('phone_cs_getStatus', function(_, cb)
+    cb({
+        active = CSGetActiveService(),
+        costs  = {
+            delivery = Config.DeliveryCost or 750,
+            pickup   = Config.PickupCost   or 500,
+        },
+    })
+end)
+
+-- Garage-Fahrzeuge holen
+-- ─────────────────────────────────────────────────────────────────────────
+-- 📱 PHONE: Vanilla Wait() approach — kein lib.callback, kein sendUIMessage
+-- ─────────────────────────────────────────────────────────────────────────
+local _phoneVehicles       = nil   -- nil = noch nie gefragt
+local _phoneVehiclesDone   = false
+
+-- Server schickt Ergebnis zurück
+AddEventHandler('rde_carservice:phone:result', function(vehicles)
+    local processed = {}
+    for _, v in ipairs(vehicles or {}) do
+        local hash    = getValidModel(v.model)
+        v.displayName = hash and GetDisplayNameFromVehicleModel(hash) or v.model
+        local label   = hash and GetLabelText(v.displayName) or ''
+        if label and label ~= 'NULL' and label ~= '' then v.displayName = label end
+        v.vehicleClass = hash and GetVehicleClassFromName(hash) or 0
+        processed[#processed + 1] = v
+    end
+    _phoneVehicles     = processed
+    _phoneVehiclesDone = true
+end)
+
+RegisterNUICallback('phone_cs_getVehicles', function(_, cb)
+    _phoneVehiclesDone = false
+    _phoneVehicles     = nil
+    TriggerNetEvent('rde_carservice:phone:getVehicles')
+    -- Warten auf Server-Antwort (max 5s) — Wait() läuft in NUI-Coroutine
+    local deadline = GetGameTimer() + 5000
+    while not _phoneVehiclesDone and GetGameTimer() < deadline do
+        Wait(50)
+    end
+    cb({ vehicles = _phoneVehicles or {} })
+end)
+
+-- Lieferung anfragen (Garage → Spieler)
+RegisterNUICallback('phone_cs_requestDelivery', function(data, cb)
+    if State.activeDelivery or State.activePickup then
+        cb({ success = false, error = 'already_active' }); return
+    end
+    local plate = data and data.plate
+    if not plate then cb({ success = false, error = 'invalid_plate' }); return end
+    local success, result = lib.callback.await('rde_carservice:requestDelivery', false, plate)
+    if success then
+        CreateThread(function() deliverVehicle(result) end)
+        cb({ success = true })
+    else
+        cb({ success = false, error = tostring(result) })
+    end
+end)
+
+-- Abholung anfragen (Spieler-Fahrzeug → Garage)
+RegisterNUICallback('phone_cs_requestPickup', function(_, cb)
+    if State.activeDelivery or State.activePickup then
+        cb({ success = false, error = 'already_active' }); return
+    end
+    local playerPed = PlayerPedId()
+    local vehicle   = GetVehiclePedIsIn(playerPed, false)
+    if vehicle == 0 then
+        vehicle = lib.getClosestVehicle(GetEntityCoords(playerPed), 5.0, false)
+    end
+    if not vehicle or not DoesEntityExist(vehicle) then
+        cb({ success = false, error = 'no_vehicle_nearby' }); return
+    end
+    local netId = NetworkGetNetworkIdFromEntity(vehicle)
+    local success, result = lib.callback.await('rde_carservice:requestPickup', false, netId)
+    if success then
+        CreateThread(function() pickupVehicle(result, vehicle) end)
+        cb({ success = true })
+    else
+        cb({ success = false, error = tostring(result) })
+    end
+end)
+
+-- Service abbrechen
+RegisterNUICallback('phone_cs_cancelService', function(_, cb)
+    if not State.activeDelivery and not State.activePickup then
+        cb({ success = false }); return
+    end
+    TriggerServerEvent('rde_carservice:cancelService')
+    cb({ success = true })
 end)
 
 -- ═══════════════════════════════════════════════════════════════════════════

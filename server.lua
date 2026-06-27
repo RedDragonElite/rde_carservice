@@ -483,6 +483,33 @@ lib.callback.register('rde_carservice:getVehicles', function(source)
     return result
 end)
 
+-- ═══════════════════════════════════════════════════════════════════════════
+-- 📱 PHONE: Push vehicle data to client (bypasses client-side lib.callback)
+-- ═══════════════════════════════════════════════════════════════════════════
+local function pushVehiclesToClient(src)
+    local player = getPlayer(src)
+    if not player then return end
+    local ok, result = pcall(MySQL.query.await,
+        'SELECT plate, model FROM vehicles WHERE owner = ? AND stored IS NOT NULL AND data IS NOT NULL ORDER BY plate ASC',
+        { player.charId }
+    )
+    TriggerClientEvent('rde_carservice:phone:pushVehicles', src, ok and result or {})
+end
+
+-- Push on player load
+AddEventHandler('ox:playerLoaded', function(src)
+    CreateThread(function()
+        Wait(3000)
+        pushVehiclesToClient(src)
+    end)
+end)
+
+-- Push on demand (client requests fresh data)
+RegisterNetEvent('rde_carservice:phone:requestVehicles', function()
+    pushVehiclesToClient(source)
+end)
+
+
 lib.callback.register('rde_carservice:requestDelivery', function(source, plate)
     local player = getPlayer(source)
     if not player then
@@ -504,17 +531,101 @@ lib.callback.register('rde_carservice:requestDelivery', function(source, plate)
     log('INFO', ('━━━━━━━━━ DELIVERY REQUEST ━━━━━━━━━'))
     log('INFO', ('Plate: "%s" | CharId: %d | Source: %d'):format(plate, player.charId, source))
 
+    -- ═══════════════════════════════════════════════════════════════════
+    -- 🔗 rde_parking INTEGRATION: Auto-Unpark Delivery
+    --
+    --    If the vehicle is currently parked in the world via rde_parking,
+    --    we DON'T block — we unpark it automatically and deliver seamlessly.
+    --    Flow:
+    --      1. Fetch props from rde_parked_vehicles (most recent saved state)
+    --      2. Verify ownership via JOIN (no trusting client input)
+    --      3. Check & deduct money
+    --      4. Fire 'rde_carservice:prepareDeliveryOfParked' → rde_parking
+    --         despawns the entity at the parking spot, clears DB + State,
+    --         notifies client to drop parkedCache[plate]
+    --      5. Set vehicles.stored = NULL (in transit)
+    --      6. Return vehicleData → client spawns NPC driver + delivers
+    --
+    --    Result: player calls carservice from far away → parked car entity
+    --    disappears from the spot → NPC drives the car to the player. ✅
+    -- ═══════════════════════════════════════════════════════════════════
+    if GetResourceState('rde_parking') == 'started' then
+        local pkOk, parkedRow = pcall(function()
+            return MySQL.single.await([[
+                SELECT pv.vehicle_id, pv.props, v.model
+                FROM rde_parked_vehicles pv
+                JOIN vehicles v ON pv.vehicle_id = v.id
+                WHERE pv.plate = ? AND v.owner = ?
+            ]], { plate, player.charId })
+        end)
+
+        if pkOk and parkedRow then
+            log('INFO', ('Auto-unpark delivery: plate="%s" found in rde_parking → proceeding'):format(plate))
+
+            -- Money gate: check BEFORE touching any parking state
+            if not hasEnoughMoney(player.charId, DeliveryCost) then
+                log('WARN', ('Insufficient funds for auto-unpark delivery, charId: %d'):format(player.charId))
+                return false, 'insufficient_funds'
+            end
+            if not removeMoney(player.charId, DeliveryCost) then
+                log('ERROR', ('Failed to remove money for auto-unpark delivery, charId: %d'):format(player.charId))
+                serviceStats.errors = serviceStats.errors + 1
+                return false, 'account_error'
+            end
+
+            -- Extract props from rde_parked_vehicles — these are the freshest saved props,
+            -- identical to what loadVehicleProperties would find in vehicles.data but already
+            -- decoded and ready. Sanitize with a json round-trip to flush rapidjson userdata.
+            local properties = {}
+            if parkedRow.props and parkedRow.props ~= '' then
+                local propOk, decoded = pcall(json.decode, parkedRow.props)
+                if propOk and type(decoded) == 'table' then
+                    local sanOk, sanitized = pcall(function()
+                        return json.decode(json.encode(decoded))
+                    end)
+                    properties = (sanOk and type(sanitized) == 'table') and sanitized or decoded
+                end
+            end
+
+            -- Tell rde_parking to despawn the entity at the parking spot and clear all state.
+            -- ClearParkedByPlate handles: DELETE rde_parked_vehicles, DeleteEntity (if spawned),
+            -- State.spawnedVehicles/parkIndex = nil, TriggerClientEvent clearParkedCache.
+            -- TriggerEvent is synchronous dispatch; ClearParkedByPlate runs in its own coroutine.
+            TriggerEvent('rde_carservice:prepareDeliveryOfParked', source, plate)
+
+            -- Set stored = NULL — vehicle is now logically "in transit" to the player.
+            -- (Was 'rde_parking'; carservice completeDelivery will also set NULL — idempotent.)
+            MySQL.update.await('UPDATE vehicles SET stored = NULL WHERE plate = ?', { plate })
+
+            local vehicleData = { plate = plate, model = parkedRow.model, properties = properties }
+            activeServices[source] = { type = 'delivery', plate = plate, vehicle = vehicleData, timestamp = os.time() }
+            serviceStats.deliveries = serviceStats.deliveries + 1
+
+            local propCount = 0
+            for _ in pairs(properties) do propCount = propCount + 1 end
+            log('SUCCESS', ('✅ Auto-unpark delivery started: plate="%s", model=%s, props=%d'):format(
+                plate, parkedRow.model, propCount))
+            log('INFO', ('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'))
+
+            return true, vehicleData
+        end
+    end
+
+    -- Normal delivery path: vehicle must be in a garage (stored IS NOT NULL).
+    -- 'rde_parking' is excluded as belt-and-suspenders for edge cases.
     -- Fetch vehicle data
     -- 🔧 FIX: Require stored IS NOT NULL so we never charge for a vehicle that's already
     -- in the world (e.g. currently being driven). Previously the SELECT would succeed
     -- even on unstored vehicles, money was taken, then the delivery would happen anyway
     -- because the property of being "stored" wasn't enforced at request time.
+    -- 🔗 rde_parking: also exclude stored='rde_parking' (vehicle is a live parked entity).
     local success, vehicleResult = pcall(MySQL.query.await, [[
         SELECT plate, model, data
         FROM vehicles
         WHERE plate = ?
         AND owner = ?
         AND stored IS NOT NULL
+        AND stored != 'rde_parking'
         LIMIT 1
     ]], {plate, player.charId})
 
@@ -670,6 +781,11 @@ RegisterNetEvent('rde_carservice:completeDelivery', function(plate)
 
         if success then
             log('SUCCESS', ('Delivery completed: %s'):format(plate))
+            -- 🔗 rde_parking INTEGRATION: notify parking system to clear any stale
+            --    parked-cache state for this plate on the client side. Without this,
+            --    the player cannot park the delivered vehicle because parkedCache[plate]
+            --    might still be true from a previous parking session.
+            TriggerEvent('rde_carservice:vehicleDelivered', source, plate)
             cleanupService(source, "delivery_completed")
         else
             log('ERROR', ('Database error completing delivery: %s'):format(plate))
@@ -698,6 +814,10 @@ RegisterNetEvent('rde_carservice:completePickup', function(plate)
 
     if success then
         log('SUCCESS', ('Pickup completed: %s'):format(plate))
+        -- 🔗 rde_parking INTEGRATION: notify parking system to remove this plate
+        --    from rde_parked_vehicles and clear the client's parkedCache. Without
+        --    this, the next proximity sweep would respawn the vehicle (stale DB entry).
+        TriggerEvent('rde_carservice:vehiclePickedUp', source, plate)
         cleanupService(source, "pickup_completed")
     else
         log('ERROR', ('Database error completing pickup: %s'):format(plate))
@@ -810,3 +930,17 @@ log('INFO', ('Service Timeout: %ds | Debug Mode: %s'):format(ServiceTimeout, Deb
 log('INFO', ('Default Garage: %s'):format(DefaultGarage))
 log('INFO', '🔧 Property loading: Enhanced extraction from ox_core')
 log('SUCCESS', '═════════════════════════════════════════════════════════')
+-- Simple getVehicles for NUI Wait() approach (bypasses lib.callback)
+RegisterNetEvent('rde_carservice:phone:getVehicles', function()
+    local src = source
+    local player = getPlayer(src)
+    if not player then
+        TriggerClientEvent('rde_carservice:phone:result', src, {})
+        return
+    end
+    local ok, rows = pcall(MySQL.query.await,
+        'SELECT plate, model FROM vehicles WHERE owner = ? AND stored IS NOT NULL AND data IS NOT NULL ORDER BY plate ASC',
+        { player.charId }
+    )
+    TriggerClientEvent('rde_carservice:phone:result', src, ok and rows or {})
+end)
